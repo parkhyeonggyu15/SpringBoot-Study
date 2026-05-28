@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 // 확인 CTRL + F12
 //@Getter
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Component
+
 public class PersonDTO {
     private String name;
     private int age;
