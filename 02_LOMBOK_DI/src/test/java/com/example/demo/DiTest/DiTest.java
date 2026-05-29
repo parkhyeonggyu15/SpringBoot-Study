@@ -1,5 +1,6 @@
 package com.example.demo.DiTest;
 
+
 import com.example.demo.Component.PersonComponent;
 import com.example.demo.Config.PersonConfig;
 import com.example.demo.Dtos.PersonDTO;
@@ -20,6 +21,7 @@ public class DiTest {
     public void t1(){
         System.out.println(personDTO);
         System.out.println(personComponent);
+
     }
 
     @Autowired
@@ -28,7 +30,6 @@ public class DiTest {
     private PersonDTO personBean01;
     @Autowired
     private PersonDTO personBean;
-
     @Test
     public void t2(){
         System.out.println(personConfig);
@@ -45,8 +46,10 @@ public class DiTest {
         System.out.println(applicationContext.getBean("personBean01"));
     }
 
+
 //    @Test
 //    public void t2(){
 //
 //    }
+
 }

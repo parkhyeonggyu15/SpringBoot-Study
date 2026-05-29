@@ -2,16 +2,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-	<title>Home</title>
+    <title>Home</title>
 </head>
 <body>
 <h1>
-	/param/redirect/step1.jsp PAGE
+    /param/redirect/step1.jsp PAGE
 </h1>
 
 <P>  ${init} </P>
 <P>  ${step1} </P>
+
 </body>
 </html>
-
-

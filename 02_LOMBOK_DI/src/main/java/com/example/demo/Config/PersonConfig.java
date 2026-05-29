@@ -10,11 +10,10 @@ public class PersonConfig {
     @Bean
     public PersonDTO personBean01(){
         return PersonDTO.builder()
-                .name("김민수")
+                .name("김범수")
                 .age(50)
                 .addr("인천")
                 .build();
-
     }
 
     @Bean(name = "personBean")
@@ -24,7 +23,5 @@ public class PersonConfig {
                 .age(31)
                 .addr("인천")
                 .build();
-
     }
-
 }

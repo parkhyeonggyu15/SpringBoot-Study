@@ -30,7 +30,7 @@ dependencies {
 	//JSP EMBED TOMCAT
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:11.0.10'
 
-	// JSP EL PARSER
+	//JSP EL PARSER
 	implementation 'jakarta.el:jakarta.el-api:6.0.1'
 
 	//JSTL
@@ -43,6 +43,7 @@ dependencies {
 
 	// VALIDATION
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
 }
 
 tasks.named('test') {

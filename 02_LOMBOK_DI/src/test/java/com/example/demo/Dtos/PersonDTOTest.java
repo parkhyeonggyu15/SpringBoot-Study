@@ -27,13 +27,13 @@ class PersonDTOTest {
         System.out.println(dto3);
     }
 
+
     @Autowired
     private PersonDTO personDTO;
 
     @Test
     public void t2(){
         System.out.println(personDTO);
-
-
     }
+
 }

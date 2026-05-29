@@ -14,5 +14,4 @@ public class PersonComponent {
         this.age = 100;
         this.addr = "창원";
     }
-
 }
