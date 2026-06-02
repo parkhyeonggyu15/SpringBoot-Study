@@ -3,7 +3,6 @@ package com.example.demo.Controller;
 
 import com.example.demo.Domain.Common.Daos.MemoDAO;
 import com.example.demo.Domain.Common.Dtos.MemoDTO;
-import com.example.demo.Domain.Common.Mapper.MemoMapper;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.beans.PropertyEditorSupport;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Controller
@@ -30,14 +27,11 @@ public class MemoController {
     @Autowired
     private MemoDAO memoDAO;
 
-    @Autowired
-    private MemoMapper memoMapper;
-
-
     @ExceptionHandler
     public String SQLExceptionHandler(Exception e , Model model){
         log.error("MEMO SQLEXCEPTION.." + e);
         model.addAttribute("ex",e.getMessage());
+        e.printStackTrace();
         return "memo/error";
     }
 
@@ -62,14 +56,11 @@ public class MemoController {
         }
 
         //3. 서비스 실행
-        long result = memoDAO.insert(memoDTO);
-
-//        memoDTO.setCreateAt(LocalDateTime.now());
-//        int result = memoMapper.insert(memoDTO);
-
+        int result = memoDAO.insert(memoDTO);
 
         //4. 뷰로 이동(+값)
-        redirectAttributes.addFlashAttribute("message","메모추가 성공!");
+        if(result>0)
+            redirectAttributes.addFlashAttribute("message","메모추가 성공!");
         return "redirect:/memo/list";
     }
 
@@ -79,5 +70,35 @@ public class MemoController {
 
         model.addAttribute("list",memoDAO.selectAll());
     }
+
+
+    @PostMapping("/update")
+    public String memo_update_post(MemoDTO dto,Model model,RedirectAttributes redirectAttributes) throws SQLException {
+        log.info("GET /memo/update...." + dto);
+        //1 파라미터
+        //2 유효성
+        //3 서비스(수정)
+        int result = memoDAO.update(dto);
+        //4 뷰로이동(+값 , +메시지)
+        if(result>0) {
+            redirectAttributes.addFlashAttribute("message",dto.getId() + " 업데이트 성공!");
+        }else
+            redirectAttributes.addFlashAttribute("message",dto.getId() + " 업데이트 실패!");
+        return "redirect:/memo/list";
+    }
+
+    @GetMapping("/delete")
+    public String memo_delete(Long id,RedirectAttributes redirectAttributes) throws SQLException {
+        log.info("GET /memo/delete...." + id);
+
+        int result = memoDAO.delete(id);
+        if(result>0)
+            redirectAttributes.addFlashAttribute("message",id + " 삭제 성공!");
+        else
+            redirectAttributes.addFlashAttribute("message",id + " 삭제 실패!");
+        return "redirect:/memo/list";
+    }
+
+
 
 }

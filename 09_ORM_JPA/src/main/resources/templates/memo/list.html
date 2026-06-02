@@ -25,8 +25,8 @@
                 <td th:text="${dto.writer}"></td>
                 <td th:text="${dto.createAt}"></td>
                 <td>
-                    <a href="javascript:void(0)">수정</a>
-                    <a href="javascript:void(0)">삭제</a>
+                    <a th:href="@{/memo/update(id=${dto.id})}">수정</a>
+                    <a th:href="@{/memo/delete(id=${dto.id})}">삭제</a>
                 </td>
             </tr>
         </th:block>

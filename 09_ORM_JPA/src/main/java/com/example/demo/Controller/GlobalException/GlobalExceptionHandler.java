@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     public String exceptionHandler_All(Exception e, Model model){
         log.error("[Global] etc exceptions : " + e);
         model.addAttribute("e",e);
-        return "global/error3";
+        return "error/error3";
     }
 
 }

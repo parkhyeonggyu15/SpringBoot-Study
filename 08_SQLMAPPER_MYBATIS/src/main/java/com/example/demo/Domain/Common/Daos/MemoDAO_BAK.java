@@ -1,8 +1,6 @@
 package com.example.demo.Domain.Common.Daos;
 
 import com.example.demo.Domain.Common.Dtos.MemoDTO;
-import com.example.demo.Domain.Common.Mapper.MemoMapper;
-import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -13,18 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MemoDAO {
+public class MemoDAO_BAK {
     @Autowired
     private DataSource dataSource3;
-
-    @Autowired
-    private SqlSession sqlSession;
-    private String NAMESPACE="com.example.demo.Domain.Common.Mapper.MemoMapper.";
-
     //CRUD FUNCTION
-    public long insert(MemoDTO dto) throws SQLException {
-        sqlSession.insert(NAMESPACE+"insert",dto);
-        return dto.getId();
+    public int insert(MemoDTO dto) throws SQLException {
+        Connection conn = dataSource3.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement("insert into tbl_memo values(null,?,?,?,?)");
+        pstmt.setString(1,dto.getTitle());
+        pstmt.setString(2,dto.getWriter());
+        pstmt.setString(3,dto.getText());
+        pstmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+        int result = pstmt.executeUpdate();
+        return result;
     }
     public List<MemoDTO> selectAll() throws SQLException{
         Connection conn = dataSource3.getConnection();
