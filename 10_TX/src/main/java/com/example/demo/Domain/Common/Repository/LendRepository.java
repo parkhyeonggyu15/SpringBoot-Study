@@ -15,5 +15,4 @@ public interface LendRepository extends JpaRepository<Lend,Long> {
 
     @Query("SELECT l FROM Lend AS l JOIN FETCH l.book WHERE l.book.bookName=:bookName")
     List<Lend> findAllLendsByBook(@Param("bookName") String bookName);
-
 }

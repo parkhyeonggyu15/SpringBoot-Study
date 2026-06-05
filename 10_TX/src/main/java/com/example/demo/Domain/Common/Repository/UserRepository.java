@@ -14,12 +14,13 @@ public interface UserRepository extends JpaRepository<User,String> {
     @Query("SELECT u FROM User as u where u.role=?1")
     List<User> selectAllByRole(String role);
 
-    @Query("SELECT u FROM User as u where u.role>=?1 and u.password=?2")
+    @Query("SELECT u FROM User as u where u.role=?1 and u.password=?2")
     List<User> selectAllByRoleAndPwd(String role, String password);
 
-    @Query("SELECT u From User as u where u.role=:role")
+    @Query("SELECT u FROM User as u where u.role=:role")
     List<User> selectAllByRole_2(@Param("role") String r);
 
-    @Query("SELECT u From User as u where u.username like concat('%',:user,'%')")
+    @Query("SELECT u FROM User as u where u.username like concat('%',:user,'%')")
     List<User> selectAllLikeUsername(@Param("user") String username);
+
 }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 목록</title>
+</head>
+<body>
+
+    <h1>PAGE : /product/list</h1>
+
+    <a href="/product/add">상품추가</a>
+    <hr/>
+
+    <!-- 검색 폼 : 상품명 LIKE + 재고 이상 (동적 SQL) -->
+    <form action="/product/list" method="get">
+        <input name="keyword"  th:value="${keyword}"  placeholder="상품명 검색" />
+        <input name="minStock" th:value="${minStock}" placeholder="재고 이상" size="6" />
+        <button type="submit">검색</button>
+    </form>
+    <hr/>
+
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>ID</th>
+            <th>PNAME</th>
+            <th>PRICE</th>
+            <th>STOCK</th>
+        </tr>
+        <th:block th:each="dto:${list}">
+            <tr>
+                <td th:text="${dto.id}"></td>
+                <td th:text="${dto.pname}"></td>
+                <td th:text="${dto.price}"></td>
+                <td th:text="${dto.stock}"></td>
+            </tr>
+        </th:block>
+        <tr th:if="${#lists.isEmpty(list)}">
+            <td colspan="4">데이터가 없습니다.</td>
+        </tr>
+    </table>
+    <hr/>
+    <div th:text="${message}"></div>
+</body>
+</html>

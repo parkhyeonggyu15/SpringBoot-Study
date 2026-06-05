@@ -9,14 +9,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "book")
+@Table(name="book")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Book {
     @Id
-    private Long BookCode;
+    private Long bookCode;
     private String bookName;
     private String publisher;
     private String isbn;

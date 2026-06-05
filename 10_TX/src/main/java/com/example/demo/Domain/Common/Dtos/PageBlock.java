@@ -31,9 +31,9 @@ public class PageBlock<E> {
     public PageBlock(PageDTO pageDto , Page<E> page){
         this.pageDto = pageDto;
         this.page = page;
-        long totalCount = page.getTotalElements();
+        long totalCount = page.getTotalElements(); // memoRepository.count();
         //전체페이지 계산
-        int totalpage = page.getTotalPages();
+        int totalpage = page.getTotalPages();//memoRepository.count() / 10 ;
         //블럭계산
         pagePerBlock=15;
         totalBlock = (int)Math.ceil( (1.0*totalpage) / pagePerBlock );

@@ -26,4 +26,5 @@ public class Memo {
     private String writer;
     @Column
     private LocalDateTime createAt;
+
 }

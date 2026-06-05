@@ -7,7 +7,8 @@ import com.example.demo.Domain.Common.Dtos.PageBlock;
 import com.example.demo.Domain.Common.Dtos.PageDTO;
 import com.example.demo.Domain.Common.Entity.Memo;
 import com.example.demo.Domain.Common.Repository.MemoRepository;
-import com.example.demo.Domain.Service.MemoServiceImpl;
+import com.example.demo.Domain.Common.Service.MemoService;
+import com.example.demo.Domain.Common.Service.MemoServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,9 +37,8 @@ import java.util.Optional;
 @RequestMapping("/memo")
 public class MemoController {
 
-
     @Autowired
-    private MemoServiceImpl memoService;
+    private MemoService memoService;
 
 
     @ExceptionHandler
@@ -79,7 +78,8 @@ public class MemoController {
     }
 
     @GetMapping("/list")
-    public void list_get( PageDTO pageDTO,Model model) throws Exception {
+    public void list_get(
+            PageDTO pageDTO, Model model) throws Exception {
         log.info("GET /memo/list..."+pageDTO);
         //파라미터
 
@@ -94,33 +94,32 @@ public class MemoController {
 
 //        model.addAttribute("list",memoDAO.selectAll());
 //        model.addAttribute("list",memoRepository.findAll());
+
+        //뷰
     }
 
     @GetMapping("/update")
-    public void memo_post(Long id, Model model) throws Exception {
+    public void memo_update(Long id,Model model) throws Exception {
         log.info("GET /memo/update...." + id);
-        //1 파라미터
-        //2 유효성
-        //3 서비스(수정)
-        MemoDTO dto = memoService.getMemo(id);
 
-        //4 뷰로이동(+값 , +메시지)
+        //
+        MemoDTO dto = memoService.getMemo(id);
 
         model.addAttribute("dto",dto);
 
-
     }
-
     @PostMapping("/update")
     public String memo_update_post(MemoDTO dto,Model model,RedirectAttributes redirectAttributes) throws Exception {
         log.info("GET /memo/update...." + dto);
-
+        //1 파라미터
+        //2 유효성
+        //3 서비스(수정)
 //        int result = memoDAO.update(dto);
 
         boolean isUpdated = memoService.updateMemo(dto);
         if(isUpdated)
-        redirectAttributes.addFlashAttribute("message",dto.getId() + " 업데이트 성공!");
-
+            redirectAttributes.addFlashAttribute("message",dto.getId() + " 업데이트 성공!");
+        //4 뷰로이동(+값 , +메시지)
 
         return "redirect:/memo/list";
     }
@@ -130,10 +129,12 @@ public class MemoController {
         log.info("GET /memo/delete...." + id);
 
 //        int result = memoDAO.delete(id);
-//        memoService.deleteById(id);
+//        memoRepository.deleteById(id);
+
         boolean isRemoved = memoService.removeMemo(id);
+
         if(isRemoved)
-        redirectAttributes.addFlashAttribute("message",id + " 삭제 성공!");
+            redirectAttributes.addFlashAttribute("message",id + " 삭제 성공!");
 
         return "redirect:/memo/list";
     }

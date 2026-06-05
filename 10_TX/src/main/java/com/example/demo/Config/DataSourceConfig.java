@@ -19,5 +19,4 @@ public class DataSourceConfig {
         dataSource.setPassword("1234");
         return dataSource;
     }
-
 }

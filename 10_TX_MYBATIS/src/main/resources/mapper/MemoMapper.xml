@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.Domain.Common.Mapper.MemoMapper">
+
+    <insert id="insertXML">
+        insert into tbl_memo values(#{id},#{title},#{writer},#{text},#{createAt})
+    </insert>
+
+    <update id="updateXML">
+        update tbl_memo set text=#{text},writer=#{writer} where id=#{id}
+    </update>
+
+    <delete id="deleteXML">
+        delete from tbl_memo where id=#{id}
+    </delete>
+    <select id="selectOneXML" resultType="com.example.demo.Domain.Common.Dtos.MemoDTO" parameterType="long">
+        select * from tbl_memo where id=#{id}
+    </select>
+
+    <select id="selectAllXML" resultType="com.example.demo.Domain.Common.Dtos.MemoDTO">
+        select * from tbl_memo
+    </select>
+
+    <select id="selectAllMapXML" resultType="java.util.Map">
+        select * from tbl_memo
+    </select>
+
+    <!-- 동적쿼리문   -->
+    <select id="selectAllIfXML" resultType="java.util.Map" parameterType="java.util.Map">
+        select * from tbl_memo
+        <if test="type!=null and type.equals('text')">
+            where text like concat('%',#{keyword},'%')
+        </if>
+    </select>
+
+    <select id="selectAllChooseXML" resultType="java.util.Map" parameterType="java.util.Map">
+        select * from tbl_memo
+        <where>
+            <if test="field != null">
+                <choose>
+                    <when test="type == 'id'">
+                        id like concat('%',#{keyword},'%')
+                    </when>
+                    <when test="type == 'text'">
+                        text like concat('%',#{keyword},'%')
+                    </when>
+                    <when test="type == 'writer'">
+                        writer like concat('%',#{keyword},'%')
+                    </when>
+                    <otherwise>
+                        createAt like concat('%',#{keyword},'%')
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectAllIfAndXML" resultType="java.util.Map" parameterType="java.util.Map">
+        select * from tbl_memo
+        <where>
+            <if test="field != null">
+                <if test="type.contains('id')">
+                    id like concat('%',#{keyword},'%')
+                </if>
+                <if test="type.contains('text')">
+                    <if test="type.contains('id')">AND</if>
+                    text like concat('%',#{keyword},'%')
+                </if>
+                <if test="type.contains('writer')">
+                    <if test="(type.contains('id')) or (type.contains('text'))">AND</if>
+                    writer like concat('%',#{keyword},'%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+
+
+    <select id="selectForEachAnd" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT * FROM tbl_memo
+        <where>
+            <if test="fields != null and keyword != null">
+                <foreach collection="fields" item="f" separator="AND">
+                    <choose>
+                        <when test="f == 'id'">
+                            id LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                        <when test="f == 'text'">
+                            text LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                        <when test="f == 'writer'">
+                            writer LIKE CONCAT('%', #{keyword}, '%')
+                        </when>
+                    </choose>
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>

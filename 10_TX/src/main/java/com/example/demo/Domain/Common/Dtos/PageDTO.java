@@ -13,5 +13,3 @@ public class PageDTO {
     private String type;
 
 }
-
-

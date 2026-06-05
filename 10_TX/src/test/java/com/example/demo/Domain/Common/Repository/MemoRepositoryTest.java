@@ -54,12 +54,12 @@ class MemoRepositoryTest {
         list.forEach(System.out::println);
     }
 
-    //    페이징 처리
+//    페이징 처리
     @BeforeEach
     public void post1000(){
         if(memoRepository.count()==0){
             for(int i=0;i<1000;i++){
-                memoRepository.save(new Memo(null,"","TEXT-"+i,"WRITER-"+i,LocalDateTime.now()));
+                memoRepository.save(new Memo(null,"TITLE-"+i,"TEXT-"+i,"WRITER-"+i,LocalDateTime.now()));
             }
         }
     }
@@ -71,7 +71,7 @@ class MemoRepositoryTest {
 
         Pageable pageable = PageRequest.of(99,10);
         Page<Memo> page =  memoRepository.findAll(pageable);
-
+//
         System.out.println("현재 페이지 번호 : "+page.getNumber());
         System.out.println("한페이지에 표시할 건수 : "+page.getSize());
         System.out.println("총게시물 개수 : "+page.getTotalElements());
@@ -83,9 +83,12 @@ class MemoRepositoryTest {
         List<Memo> list =  page.getContent();
         list.forEach(System.out::println);
         System.out.println("---");
-//         다음페이지로 이동
+        // 다음페이지로 이동
         Page<Memo> nextPage = memoRepository.findAll(page.nextPageable());
         // 이전페이지로 이동
         Page<Memo> previousPage = memoRepository.findAll(page.previousPageable());
+
+
     }
+
 }

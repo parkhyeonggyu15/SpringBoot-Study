@@ -1,8 +1,6 @@
 package com.example.demo.Domain.Common.Dtos;
 
-import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,12 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 public class BookDTO {
     private Long id;        // 도서 번호 (PK)
     private String title;   // 제목
     private String author;  // 저자
     private Integer price;  // 가격
-
-
 }

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <h1>PAGE : /memo/list </h1>
+
+    <a href="/memo/add">메모추가</a>
+    <hr/>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>TEXT</th>
+            <th>WRITER</th>
+            <th>CREATEAT</th>
+            <th>관리</th>
+        </tr>
+        <th:block th:each="dto:${list}">
+            <tr>
+                <td th:text="${dto.id}"></td>
+                <td th:text="${dto.text}"></td>
+                <td th:text="${dto.writer}"></td>
+                <td th:text="${dto.createAt}"></td>
+                <td>
+                    <a href="javascript:void(0)">수정</a>
+                    <a href="javascript:void(0)">삭제</a>
+                </td>
+            </tr>
+        </th:block>
+    </table>
+    <hr/>
+    <div th:text="${message}"></div>
+</body>
+</html>
