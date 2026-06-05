@@ -11,7 +11,7 @@ import java.util.Map;
 public interface MemoMapper {
 
     @SelectKey(statement = "SELECT max(id) FROM testdb.memo",keyProperty = "id",before = false,resultType = Long.class)
-    @Insert("insert into memo values(#{id},#{title},#{writer},#{text},#{createAt})")
+    @Insert("insert into memo values(#{id},#{title},#{createAt},#{text},#{writer})")
     public int insert(MemoDTO memoDTO);
 
     @Update("update tbl_memo set text=#{text} where id=#{id}")
