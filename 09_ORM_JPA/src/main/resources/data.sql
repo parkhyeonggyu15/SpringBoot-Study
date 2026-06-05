@@ -1,0 +1,1 @@
+insert ignore into tbl_a values(1, 'abc')

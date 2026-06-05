@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관계매핑 EX - 게시글/댓글</title>
+    <style>
+        body  { font-family: sans-serif; }
+        .msg  { color:#06c; font-weight:bold; }
+        table { border-collapse: collapse; margin-top:10px; min-width:480px; }
+        th,td { border:1px solid #bbb; padding:6px 12px; }
+        th    { background:#f0f0f0; }
+        .box  { margin:14px 0; padding:10px; background:#f7f7f7; border-radius:6px; }
+        label { font-weight:bold; }
+    </style>
+</head>
+<body>
+
+<h1>[EX] 게시글(1) ↔ 댓글(N) 관계매핑</h1>
+
+<p class="msg" th:if="${msg != null}" th:text="${msg}"></p>
+
+<!-- 게시글 등록 -->
+<div class="box">
+    <h3>게시글 등록</h3>
+    <form th:action="@{/exrel/board}" method="post">
+        <label>제목</label> <input name="title" />
+        <label>내용</label> <input name="content" size="40" />
+        <button type="submit">게시글 등록</button>
+    </form>
+</div>
+
+
+<h3>게시글 목록</h3>
+<table>
+    <tr><th>ID</th><th>제목</th><th>내용</th><th>댓글</th></tr>
+    <tr th:each="b : ${boards}">
+        <td th:text="${b.id}"></td>
+        <td th:text="${b.title}"></td>
+        <td th:text="${b.content}"></td>
+        <td><a th:href="@{/exrel/board(boardId=${b.id})}">댓글보기</a></td>
+    </tr>
+    <tr th:if="${boards == null or #lists.isEmpty(boards)}">
+        <td colspan="4">게시글이 없습니다.</td>
+    </tr>
+</table>
+
+<div class="box" th:if="${board != null}">
+    <h3 th:text="'[' + ${board.id} + '] ' + ${board.title} + ' 의 댓글'"></h3>
+    <ul>
+        <li th:each="r : ${replies}" th:text="${r.content}"></li>
+        <li th:if="${replies == null or #lists.isEmpty(replies)}">댓글이 없습니다.</li>
+    </ul>
+
+    <form th:action="@{/exrel/reply}" method="post">
+        <input type="hidden" name="boardId" th:value="${board.id}" />
+        <label>댓글</label> <input name="content" size="40" />
+        <button type="submit">댓글 등록</button>
+    </form>
+</div>
+
+
+</body>
+</html>
