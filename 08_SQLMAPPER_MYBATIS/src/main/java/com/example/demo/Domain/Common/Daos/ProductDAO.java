@@ -34,35 +34,35 @@ public class ProductDAO {
     public int insert(ProductDTO dto) {
         log.info("ProductDAO.insert..." + dto);
         // TODO: productMapper.insert 호출
-        return productMapper.insert(dto);
+        return 0;
     }
 
     /* [EX06] 전체 조회  [HINT] return productMapper.selectAllXML(); */
     public List<ProductDTO> selectAll() {
         log.info("ProductDAO.selectAll...");
         // TODO: productMapper.selectAllXML (또는 selectAll) 호출
-        return productMapper.selectAllXML();
+        return List.of();
     }
 
     /* [EX06] 단건 조회  [HINT] return productMapper.selectOne(id); */
     public ProductDTO selectOne(Long id) {
         log.info("ProductDAO.selectOne... id=" + id);
         // TODO: productMapper.selectOne 호출
-        return productMapper.selectOne(id);
+        return null;
     }
 
     /* [EX06] 수정  [HINT] return productMapper.update(dto); */
     public int update(ProductDTO dto) {
         log.info("ProductDAO.update..." + dto);
         // TODO: productMapper.update 호출
-        return productMapper.update(dto);
+        return 0;
     }
 
     /* [EX06] 삭제  [HINT] return productMapper.delete(id); */
     public int delete(Long id) {
         log.info("ProductDAO.delete... id=" + id);
         // TODO: productMapper.delete 호출
-        return productMapper.delete(id);
+        return 0;
     }
 
     /*
@@ -77,9 +77,6 @@ public class ProductDAO {
     public List<Map<String, Object>> search(String keyword, Integer minStock) {
         log.info("ProductDAO.search... keyword=" + keyword + ", minStock=" + minStock);
         // TODO: param Map 구성 후 searchXML 호출
-        Map<String,Object> param = new HashMap<>();
-        param.put("keyword",keyword);
-        param.put("minStock",minStock);
-        return productMapper.searchXML(param);
+        return List.of();
     }
 }

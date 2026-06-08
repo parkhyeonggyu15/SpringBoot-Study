@@ -1,4 +1,4 @@
-package com.example.demo.Domain.Service;
+package com.example.demo.Domain.Common.Service;
 
 import com.example.demo.Domain.Common.Dtos.MemoDTO;
 import org.junit.jupiter.api.Test;

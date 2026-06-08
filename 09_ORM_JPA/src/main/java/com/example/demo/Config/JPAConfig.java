@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+
 @Configuration
 @EntityScan(basePackages = {"com.example.demo.Domain.Common.Entity"})
 @EnableJpaRepositories(basePackages = {"com.example.demo.Domain.Common.Repository"})

@@ -51,10 +51,7 @@ public class ProductController {
                        Model model) {
         log.info("GET /product/list... keyword=" + keyword + ", minStock=" + minStock);
         // TODO 1: model.addAttribute("list", productDAO.search(keyword, minStock));
-        model.addAttribute("list",productDAO.search(keyword,minStock));
         // TODO 2: model.addAttribute("keyword", keyword); model.addAttribute("minStock", minStock);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("minStock",minStock);
         return "product/list";
     }
 
@@ -81,7 +78,6 @@ public class ProductController {
         }
 
         // TODO: productDAO.insert(productDTO);
-        productDAO.insert(productDTO);
         redirectAttributes.addFlashAttribute("message", "상품추가 성공!");
         return "redirect:/product/list";
     }

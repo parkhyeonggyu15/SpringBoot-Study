@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class BookRepositoryTest {
 
@@ -20,5 +22,6 @@ class BookRepositoryTest {
     public void t2(){
         List<Book> list = bookRepository.findByBookName("t1");
         list.forEach(System.out::println);
+
     }
 }

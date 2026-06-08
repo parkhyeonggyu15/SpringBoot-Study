@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+<h1>
+    PAGE : /memo/add
+</h1>
+
+<form action="/memo/add" method="POST">
+    <div>
+        <label>제목</label>
+        <input name="title" />&nbsp;&nbsp;<span style="font-size:.8rem;" th:text="${title}"></span>
+    </div>
+    <div>
+        <label>작성자</label>
+        <input name="writer" /> &nbsp;&nbsp;<span style="font-size:.8rem;"th:text="${writer}"></span>
+    </div>
+    <div>
+        <label>내용</label>
+        <textarea name="text"></textarea>&nbsp;&nbsp;<span style="font-size:.8rem;" th:text="${text}"></span>
+    </div>
+
+    <div>
+        <input type="submit" value="저장" />
+    </div>
+</form>
+
+
+</body>
+</html>
