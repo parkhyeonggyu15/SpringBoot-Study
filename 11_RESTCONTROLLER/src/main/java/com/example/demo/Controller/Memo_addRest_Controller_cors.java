@@ -3,7 +3,6 @@ package com.example.demo.Controller;
 
 import com.example.demo.Domain.Common.Dtos.MemoDTO;
 import com.example.demo.Domain.Common.Dtos.PageDTO;
-import com.example.demo.Domain.Common.Entity.Memo;
 import com.example.demo.Domain.Common.Service.MemoService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,10 @@ import java.util.Map;
 @Controller
 @Slf4j
 @RequestMapping("/memo")
-public class Memo_addRest_Controller {
+@CrossOrigin(
+        origins = {"http://localhost:5500","http://127.0.0.1:5500"}
+)
+public class Memo_addRest_Controller_cors {
 
     @Autowired
     private MemoService memoService;

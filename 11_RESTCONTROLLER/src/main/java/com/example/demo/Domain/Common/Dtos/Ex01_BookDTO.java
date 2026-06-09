@@ -22,17 +22,30 @@ public class Ex01_BookDTO {
     private Long bookCode;
 
     // TODO-1: bookName / publisher / isbn 에 @NotBlank 검증 어노테이션을 추가하세요.
+    @NotBlank
     private String bookName;
+    @NotBlank
     private String publisher;
+    @NotBlank
     private String isbn;
 
     // TODO-2: toEntity() 작성 — this 필드들을 Book.builder()...build() 로 변환해 반환
     public Book toEntity() {
-        return null; // 구현하세요
+        return  Book.builder()
+                .bookCode(this.bookCode)
+                .bookName(this.bookName)
+                .publisher(this.publisher)
+                .isbn(this.isbn)
+                .build();// 구현하세요
     }
 
     // TODO-3: from(Book book) 작성 — Book → Ex01_BookDTO.builder()...build() 로 변환해 반환
     public static Ex01_BookDTO from(Book book) {
-        return null; // 구현하세요
+
+        return Ex01_BookDTO.builder()
+                .bookCode(book.getBookCode())
+                .bookName(book.getBookName())
+                .publisher(book.getPublisher())
+        .build(); // 구현하세요
     }
 }
