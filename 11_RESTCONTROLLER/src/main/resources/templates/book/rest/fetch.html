@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>(FETCH)/MEMO/REST/INDEX</h1>
+
+<!--  LIST  -->
+<h1>/memo/rest/list</h1>
+<form name="formList" onsubmit="return false">
+    <input type="text" name="pageNo" value="0">
+    <input type="text" name="amount" value="10">
+    <button onclick="getList()">LIST</button>
+</form>
+<hr/>
+<!--  CREATE   -->
+<h1>/memo/rest/add</h1>
+<form name="formAdd"   method="POST" onsubmit="return false">
+    <div>
+        <label>제목</label>
+        <input name="title" />&nbsp;&nbsp;
+    </div>
+    <div>
+        <label>작성자</label>
+        <input name="writer" /> &nbsp;
+    </div>
+    <div>
+        <label>내용</label>
+        <textarea name="text"></textarea>&nbsp;&nbsp;
+    </div>
+
+    <div>
+        <button onclick="addMemo()"> 저장</button>
+    </div>
+</form>
+<!--  UPDATE   -->
+<hr/>
+<h1>/memo/rest/update</h1>
+<form name="formUpdate" method="PUT" onsubmit="return false">
+    <div>
+        <label>ID</label>
+        <input name="id" />
+    </div>
+    <div>
+        <label>제목</label>
+        <input name="title" />&nbsp;&nbsp;
+    </div>
+    <div>
+        <label>작성자</label>
+        <input name="writer" />
+    </div>
+    <div>
+        <label>내용</label>
+        <textarea name="text"></textarea>
+    </div>
+    <div>
+        <button onclick="updateMemo()">PUT</button>
+    </div>
+</form>
+<!--  DELETE   -->
+<hr/>
+<h1>/memo/rest/delete</h1>
+<form name="formDelete" method="DELETE" onsubmit="return false">
+    <div>
+        <label>ID</label>
+        <input name="id" />
+    </div>
+    <div>
+
+        <button onclick="deleteMemo()">DELETE</button>
+    </div>
+</form>
+
+
+<script>
+    //  LIST
+    async function getList() {
+        const formList = document.formList;
+        const pageNo = formList.pageNo.value;
+        const amount = formList.amount.value;
+
+        const opt ={method: "GET",headers: {"Content-Type": "application/json"} }
+        const response = await fetch(`/memo/rest/list?pageNo=${pageNo}&amount=${amount}`,opt,null);
+
+        const data =  await response.json();
+        console.log(data);
+    }
+
+    // ADD
+    async function addMemo() {
+        const formAdd = document.formAdd;
+        const title = formAdd.title.value;
+        const text = formAdd.text.value;
+        const writer = formAdd.writer.value;
+        const body={title,text,writer};
+        const jsonBody = JSON.stringify(body);
+
+        const opt ={method: "POST",headers: {"Content-Type": "application/json"}, body:jsonBody }
+        const response = await fetch(`/memo/rest/add`,opt);
+
+        const data =  await response.json();
+        console.log(data);
+    }
+
+
+    // UPDATE
+     async function updateMemo() {
+        const formUpdate = document.formUpdate;
+        const id = formUpdate.id.value;
+        const title = formUpdate.title.value;
+        const text = formUpdate.text.value;
+        const writer = formUpdate.writer.value;
+        const body={id,title,text,writer};
+        const jsonBody = JSON.stringify(body);
+
+
+        const opt ={method: "PUT",headers: {"Content-Type": "application/json"}, body:jsonBody }
+        const response = await fetch(`/memo/rest/update`,opt);
+
+        const data =  await response.json();
+        console.log(data);
+    }
+    // DELETE
+    async function deleteMemo() {
+        const formDelete = document.formDelete;
+        const id = formDelete.id.value;
+        const body={id};
+        const jsonBody = JSON.stringify(body);
+        // console.log("body",body);
+        // console.log("jsonBody",jsonBody);
+
+        const opt ={method: "DELETE",headers: {"Content-Type": "application/json"}, body:jsonBody }
+        const response = await fetch(`/memo/rest/delete`,opt);
+
+        const data =  await response.json();
+        console.log(data);
+
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!--  JQUERY CDN   -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+<h1>(JQUERY-AJAX)/MEMO/REST/INDEX</h1>
+
+<!--  LIST  -->
+<h1>/memo/rest/list</h1>
+<form name="formList" onsubmit="return false">
+    <input type="text" name="pageNo" value="0">
+    <input type="text" name="amount" value="10">
+    <button onclick="getList()">LIST</button>
+</form>
+<hr/>
+<!--  CREATE   -->
+<h1>/memo/rest/add</h1>
+<form name="formAdd"   method="POST" onsubmit="return false">
+    <div>
+        <label>제목</label>
+        <input name="title" />&nbsp;&nbsp;
+    </div>
+    <div>
+        <label>작성자</label>
+        <input name="writer" /> &nbsp;
+    </div>
+    <div>
+        <label>내용</label>
+        <textarea name="text"></textarea>&nbsp;&nbsp;
+    </div>
+
+    <div>
+        <button onclick="addMemo()"> 저장</button>
+    </div>
+</form>
+<!--  UPDATE   -->
+<hr/>
+<h1>/memo/rest/update</h1>
+<form name="formUpdate" method="PUT" onsubmit="return false">
+    <div>
+        <label>ID</label>
+        <input name="id" />
+    </div>
+    <div>
+        <label>제목</label>
+        <input name="title" />&nbsp;&nbsp;
+    </div>
+    <div>
+        <label>작성자</label>
+        <input name="writer" />
+    </div>
+    <div>
+        <label>내용</label>
+        <textarea name="text"></textarea>
+    </div>
+    <div>
+        <button onclick="updateMemo()">PUT</button>
+    </div>
+</form>
+<!--  DELETE   -->
+<hr/>
+<h1>/memo/rest/delete</h1>
+<form name="formDelete" method="DELETE" onsubmit="return false">
+    <div>
+        <label>ID</label>
+        <input name="id" />
+    </div>
+    <div>
+
+        <button onclick="deleteMemo()">DELETE</button>
+    </div>
+</form>
+
+
+<script>
+    //  LIST
+    async function getList() {
+        const formList = document.formList;
+        const pageNo = formList.pageNo.value;
+        const amount = formList.amount.value;
+
+        $.ajax({
+            url : `/memo/rest/list?pageNo=${pageNo}&amount=${amount}`,
+            method : "GET",
+            contentType:"application/json",
+            dataType : "json",
+            // data : {},
+            success : function(data){console.log(data);},
+            error : function(xhr,status,error){console.log(error);}
+        })
+    }
+
+    // ADD
+    async function addMemo() {
+        const formAdd = document.formAdd;
+        const title = formAdd.title.value;
+        const text = formAdd.text.value;
+        const writer = formAdd.writer.value;
+        const body={title,text,writer};
+        const jsonBody = JSON.stringify(body);
+
+        $.ajax({
+            url : `/memo/rest/add`,
+            method : "POST",
+            contentType:"application/json",
+            dataType : "json",
+            data : jsonBody,
+            success : function(data){console.log(data);},
+            error : function(xhr,status,error){console.log(error);}
+        })
+
+    }
+
+
+    // UPDATE
+    async function updateMemo() {
+        const formUpdate = document.formUpdate;
+        const id = formUpdate.id.value;
+        const title = formUpdate.title.value;
+        const text = formUpdate.text.value;
+        const writer = formUpdate.writer.value;
+        const body={id,title,text,writer};
+        const jsonBody = JSON.stringify(body);
+
+        $.ajax({
+            url : `/memo/rest/update`,
+            method : "PUT",
+            contentType:"application/json",
+            dataType : "json",
+            data : jsonBody,
+            success : function(data){console.log(data);},
+            error : function(xhr,status,error){console.log(error);}
+        })
+
+    }
+    // DELETE
+    async function deleteMemo() {
+        const formDelete = document.formDelete;
+        const id = formDelete.id.value;
+        const body={id};
+        const jsonBody = JSON.stringify(body);
+        // console.log("body",body);
+        // console.log("jsonBody",jsonBody);
+
+        $.ajax({
+            url : `/memo/rest/delete`,
+            method : "DELETE",
+            contentType:"application/json",
+            dataType : "json",
+            data : jsonBody,
+            success : function(data){console.log(data);},
+            error : function(xhr,status,error){console.log(error);}
+        })
+
+    }
+</script>
+
+</body>
+</html>

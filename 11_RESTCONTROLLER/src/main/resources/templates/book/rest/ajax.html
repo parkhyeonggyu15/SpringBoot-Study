@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>BOOK REST - jQuery ajax (실습)</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <h1>/BOOK/REST/ajax <small>(jQuery $.ajax)</small></h1>
+
+    <!-- TODO-17: 입력 폼 + 목록 테이블 만들기                                   -->
+    <!--   - 입력칸: bookCode / bookName / publisher / isbn + [등록] 버튼        -->
+    <!--   - 목록 테이블 <tbody id="bookTbody"> (열: 코드/도서명/출판사/ISBN/관리) -->
+
+    <script>
+        const BASE = '/book/rest';
+
+        // TODO-18: jQuery $.ajax 로 CRUD 연결
+        //  핵심 패턴:
+        //    $.ajax({
+        //        url, method,                          // 'GET'|'POST'|'PUT'|'DELETE'
+        //        contentType: 'application/json',      // 요청 본문이 JSON 임을 명시 (필수!)
+        //        data: JSON.stringify(body),           // GET 은 생략
+        //        dataType: 'json',
+        //        success: function(res){ ... },
+        //        error: function(xhr){ if(xhr.status===400) xhr.responseJSON ... }
+        //    });
+        //  1) loadList() : GET  `${BASE}/list?pageNo=0&amount=10` → res.list 렌더링
+        //  2) 등록       : POST `${BASE}/add`
+        //  3) 수정       : PUT  `${BASE}/update`
+        //  4) 삭제       : DELETE `${BASE}/delete` (body: {bookCode})
+        //  5) 400 일 때 xhr.responseJSON 의 필드 에러 표시
+
+    </script>
+</body>
+</html>
