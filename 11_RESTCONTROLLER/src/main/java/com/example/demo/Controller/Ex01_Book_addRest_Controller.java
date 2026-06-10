@@ -26,7 +26,7 @@ import java.util.Map;
 @Controller
 @Slf4j
 @RequestMapping("/book")
-public class Ex01_Book_addRest_Controller_cors {
+public class Ex01_Book_addRest_Controller {
 
     // TODO: 위 import 와 함께 Ex01_BookService 를 @Autowired 로 주입하세요.
     @Autowired

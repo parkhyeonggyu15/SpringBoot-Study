@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <h1>MAIN PAGE /Kakao</h1>
+    <a href="/Kakao/logout1">로그아웃(/Kakao/logout1)</a>
+    <a href="/Kakao/logout2">연결해제(/Kakao/logout2)</a>
+    <a href="/Kakao/logout3">카카오계정과 함께 로그아웃(/Kakao/logout3)</a>
+
+    <hr/>
+        <div th:text="${kakaoProfileResponse}"></div>
+        <hr/>
+    <div th:text="${kakaoProfileResponse.id}"></div>
+    <hr/>
+    <div th:text="${kakaoProfileResponse.connected_at}"></div>
+    <hr/>
+    <div th:text="${kakaoProfileResponse.properties}"></div>
+</body>
+</html>
