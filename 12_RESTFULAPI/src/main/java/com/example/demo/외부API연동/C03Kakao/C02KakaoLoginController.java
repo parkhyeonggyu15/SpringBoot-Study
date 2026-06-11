@@ -21,16 +21,15 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 
 @Controller
 @Slf4j
 @RequestMapping("/Kakao")
-public class KakaoLoginController {
+public class C02KakaoLoginController {
 
-    private String CLIENT_ID="b784f96dd2c1c0a4108b3d95f8eccced";
+    private String CLIENT_ID="내 토큰";
     private String REDIRECT_URI="http://192.168.5.13:8080/Kakao/callback";
     private String LOGOUT_REDIRECT_URI="http://192.168.5.13:8080/Kakao/login";
 
