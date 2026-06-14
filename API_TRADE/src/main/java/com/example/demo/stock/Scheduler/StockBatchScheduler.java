@@ -18,7 +18,8 @@ public class StockBatchScheduler {
 
     // 평일 월~금 오후 6시 정각에 외부 데이터 수집 실행
 //    @Scheduled(cron = "0 0 18 * * MON-FRI")
-    @Scheduled(fixedDelay = 10000)
+//    @Scheduled(fixedDelay = 10000)
+    @Scheduled(initialDelay = 1000, fixedDelay = 3600000)
     public void batchJob() {
         for (String code : targetStocks) {
             try {
