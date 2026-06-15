@@ -83,7 +83,7 @@ public class StockApiService {
         String cleanStockCode = stockCode.trim();
 
         // 💡 [핵심 해결책 1] 오픈다트 진짜 대량보유 보고서 JSON 주소로 변경합니다.
-        String targetUrl = "https://opendart.fss.or.kr/api/majorStockSubstn.json?crtfc_key=a93cd8f3e48dd504783a0e46f930f08dd6b0c31e&corp_code=00126380";
+        String targetUrl = "https://opendart.fss.or.kr/api/majorstock.json";
 
         // 💡 [핵심 해결책 2] 오픈다트 전용 8자리 고유번호(corp_code) 변환 로직
         // (원래는 전수 매핑 테이블이 필요하지만, 당장 상위 종목 테스트를 위해 하드코딩 처리)
