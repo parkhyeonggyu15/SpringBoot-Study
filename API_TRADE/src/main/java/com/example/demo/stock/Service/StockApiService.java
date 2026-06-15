@@ -20,6 +20,7 @@ public class StockApiService {
 
     private final StockPriceRepository stockPriceRepository;
     private final StockReportRepository stockReportRepository;
+    private final DartCorpCodeService dartCorpCodeService;
 
     // 💡 Netty 대신 자바 기본 보안 설정을 100% 따르는 RestTemplate을 선언합니다.
     private final RestTemplate restTemplate = new RestTemplate();
@@ -64,6 +65,7 @@ public class StockApiService {
                             .hipr(Long.parseLong(String.valueOf(item.get("hipr"))))
                             .lopr(Long.parseLong(String.valueOf(item.get("lopr"))))
                             .trqu(Long.parseLong(String.valueOf(item.get("trqu"))))
+                            .mrktTotAmt(Long.parseLong(String.valueOf(item.get("mrktTotAmt"))))
                             .build();
 
                     stockPriceRepository.save(stockPrice);
@@ -78,23 +80,25 @@ public class StockApiService {
         }
     }
 
+
+
     @Transactional
     public void fetchAndSaveStockReports(String stockCode) {
         String cleanStockCode = stockCode.trim();
 
-        // 💡 [수정] 오픈다트 표준 규격에 맞춰 대소문자와 주소 매핑을 교정했습니다.
-        // 오픈다트는 기본적으로 개발자 편의를 위해 결과 포맷을 지정하는 형식을 취합니다.
-        String url = "https://opendart.fss.or.kr/api/majorStock.xml?crtfc_key=" + openDartKey + "&corp_code=" + cleanStockCode;
+        // 💡 KRX 종목코드 -> DART 고유번호(corp_code) 변환
+        String corpCode = dartCorpCodeService.getCorpCode(cleanStockCode);
+        if (corpCode == null) {
+            System.out.println(">> [알림] " + cleanStockCode + " 종목의 DART corp_code 매핑을 찾을 수 없어 건너뜁니다.");
+            return;
+        }
 
-        // 만약 위 주소로도 안 될 경우를 대비해, 오픈다트 공식 가이드의 정석 URL 규격으로 매핑합니다.
-        // 오픈다트의 대량보유상황보고서 정식 API 경로는 대소문자를 구분할 수 있으므로 아래와 같이 검증합니다.
-        String fixedUrl = UriComponentsBuilder.fromUriString("https://opendart.fss.or.kr/api/majorStock.json")
+        String fixedUrl = UriComponentsBuilder.fromUriString("https://opendart.fss.or.kr/api/majorstock.json") // ✅ 소문자
                 .queryParam("crtfc_key", openDartKey)
-                .queryParam("corp_code", cleanStockCode)
+                .queryParam("corp_code", corpCode) // ✅ 6자리 종목코드 대신 8자리 고유번호
                 .build()
                 .toUriString();
 
-        // API 호출
         Map<String, Object> response = restTemplate.getForObject(fixedUrl, Map.class);
 
         System.out.println("====== [오픈다트 API 진짜 결과] ======");
@@ -189,6 +193,7 @@ public class StockApiService {
                             .hipr(Long.parseLong(String.valueOf(stock.get("hipr"))))
                             .lopr(Long.parseLong(String.valueOf(stock.get("lopr"))))
                             .trqu(Long.parseLong(String.valueOf(stock.get("trqu"))))
+                            .mrktTotAmt(Long.parseLong(String.valueOf(stock.get("mrktTotAmt"))))
                             .build();
 
                     stockPriceRepository.save(stockPrice);
