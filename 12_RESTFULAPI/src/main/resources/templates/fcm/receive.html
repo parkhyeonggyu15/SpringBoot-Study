@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>알림 수신</title>
+</head>
+<body>
+    <div id="bell">🔔 <span id="badge">0</span></div>
+
+    <h2>수신함</h2>
+    <div id="status">초기화 중...</div>
+    <div id="list"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+    <script>
+        // 웹 수신 [문서]
+        // - 토큰 getToken : https://firebase.google.com/docs/cloud-messaging/js/client
+        // - 수신 onMessage : https://firebase.google.com/docs/cloud-messaging/js/receive
+        const firebaseConfig = {
+            apiKey:            "AIzaSyDYOIVqfxfn7dq978cwSBaKbwxI_XAl3TQ",
+            authDomain:        "sb3x2026-5361d.firebaseapp.com",
+            projectId:         "sb3x2026-5361d",
+            storageBucket:     "sb3x2026-5361d.firebasestorage.app",
+            messagingSenderId: "656214245565",
+            appId:             "1:656214245565:web:dfa8a1bfba52ffc18cf7d4"
+        };
+        const VAPID_KEY = "BFCFedSXqPc4Nk2hs8cKd5-Y3zXaEZZTSDzGDQ6S6KOl1zr8B8wFlyRdf-YfaB1qvTXiZ0fGCbgftV7NvD6JSok";
+
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        let count = 0;
+        const badge  = document.getElementById('badge');
+        const list   = document.getElementById('list');
+        const status = document.getElementById('status');
+        badge.style.display = 'none';   // 초기 숨김 (기존 CSS display:none 대체)
+
+        function render(title, body) {
+            count++;
+            badge.textContent = count;
+            badge.style.display = 'inline';
+            const div = document.createElement('div');
+            div.textContent = title + ' : ' + body;
+            list.prepend(div);
+        }
+
+        // 서비스워커가 active 될 때까지 대기 (no active Service Worker 방지)
+        function waitForActive(reg) {
+            return new Promise((resolve) => {
+                if (reg.active) { resolve(reg); return; }
+                const sw = reg.installing || reg.waiting;
+                if (!sw) { navigator.serviceWorker.ready.then(resolve); return; }
+                sw.addEventListener('statechange', () => {
+                    if (sw.state === 'activated') resolve(reg);
+                });
+            });
+        }
+
+        // 권한요청 → 서비스워커 등록 → 토큰 발급 → 서버 등록 (fetch .then 체인)
+        Notification.requestPermission()
+            .then((permission) => {
+                if (permission !== 'granted') { status.textContent = '알림 권한 거부됨'; return; }
+                return navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                    .then((reg) => waitForActive(reg))
+                    .then((swReg) => messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg }))
+                    .then((token) => fetch('/api/fcm/token', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: 'receiver', token })
+                    }))
+                    .then(() => { status.textContent = '수신 준비 완료'; });
+            })
+            .catch((e) => { status.textContent = '초기화 실패: ' + e.message; });
+
+        // 포그라운드 수신 → 표시 + 배지 카운트
+        messaging.onMessage((payload) => {
+            const n = payload.notification || {};
+            render(n.title, n.body);
+        });
+
+        // 종 클릭 → 카운트 초기화
+        document.getElementById('bell').addEventListener('click', () => {
+            count = 0; badge.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

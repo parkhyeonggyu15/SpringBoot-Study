@@ -22,8 +22,8 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/Naver")
 public class NaverLoginController {
 
-    private String CLIENT_ID ="내 클라이언트 키";
-    private String CLIENT_SECRET ="내 시크릿 키";
+    private String CLIENT_ID = "-";
+    private String CLIENT_SECRET ="-";
     private String CALLBACK_URL="http://127.0.0.1:8080/Naver/callback";
 
     private NaverTokenResponse naverTokenResponse;
@@ -31,20 +31,21 @@ public class NaverLoginController {
 
     @GetMapping("/login")
     public String login(){
-        log.info("GET /login...");
+        log.info("GET /login....");
         return "redirect:https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id="+CLIENT_ID+"&state=STATE_STRING&redirect_uri="+CALLBACK_URL;
     }
 
     @GetMapping("/callback")
-    public String callback(String code, String state, String error, String error_description){
-        log.info("GET /Naver/callback...{},{},{},{}",code,state,error,error_description);
+    public String callback(String code, String state,String error , String error_description){
+        log.info("GET /Naver/callback...{},{},{},{}" ,code,state,error,error_description);
+
 
         //요청파라미터 정리
         String url = "https://nid.naver.com/oauth2.0/token";
 
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
         params.add("grant_type","authorization_code");
-        params.add("client_id",CLIENT_ID);
+        params.add("client_id",CLIENT_ID );
         params.add("client_secret",CLIENT_SECRET);
         params.add("code",code);
         params.add("state",state);
@@ -52,24 +53,24 @@ public class NaverLoginController {
         //요청 헤더
         HttpHeaders header = new HttpHeaders();
 
-        //요청 엔티티(헤더 + 바디(params))
-        HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity<>(params,header);
+        //요청 엔터티(헤더 + 바디(params))
+        HttpEntity< MultiValueMap<String,String> > entity = new HttpEntity<>(params,header);
 
         //응답 = 요청
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<NaverTokenResponse> response =
-                restTemplate.exchange(url, HttpMethod.POST,entity,NaverTokenResponse.class);
+        ResponseEntity<NaverTokenResponse> response = restTemplate.exchange(url, HttpMethod.POST,entity,NaverTokenResponse.class);
 
         System.out.println(response.getBody());
         this.naverTokenResponse = response.getBody();
 
         return "redirect:/Naver";
-    }
 
+
+    }
     //Endpoint : /Naver
     @GetMapping
     public String main(Model model){
-        log.info("GET /Naver..." );
+        log.info("GET /Naver...");
 
         //요청파라미터 정리
         String url = "https://openapi.naver.com/v1/nid/me";
@@ -79,12 +80,12 @@ public class NaverLoginController {
 //        params.add("","");
 //        params.add("","");
 //        params.add("","");
-//
+
         //요청 헤더
         HttpHeaders header = new HttpHeaders();
         header.add("Authorization","Bearer "+naverTokenResponse.getAccess_token());
 
-        //요청 엔티티(헤더 + 바디(params))
+        //요청 엔터티(헤더 + 바디(params))
         HttpEntity entity = new HttpEntity(header);
 
         //응답 = 요청
@@ -100,9 +101,11 @@ public class NaverLoginController {
         return "Naver/main";
     }
 
+
+
     @GetMapping("/logout")
     public String logout(){
-        log.info("GET /Naver/logout...");
+        log.info("GET /Naver/logout");
         return "redirect:https://nid.naver.com/nidlogin.logout?returl=https://www.naver.com/";
     }
 
@@ -114,7 +117,6 @@ public class NaverLoginController {
         public String token_type;
         public String expires_in;
     }
-
     //
     @Data
     private static class Profile{
@@ -123,7 +125,6 @@ public class NaverLoginController {
         public String email;
         public String name;
     }
-
     @Data
     private static class NaverProfileResponse{
         public String resultcode;
@@ -131,5 +132,6 @@ public class NaverLoginController {
         @JsonProperty(value="response")
         public Profile profile;
     }
+
 
 }

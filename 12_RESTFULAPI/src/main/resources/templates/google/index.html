@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <h1>GOOGLE INDEX PAGE /google</h1>
+    <a href="/google/logout1">로그아웃_토큰만 폐기(/google/logout1)</a> |
+
+    <a href="/google/logout2">로그아웃_OAUTH2_연결해제(/google/logout2)</a> |
+    |
+    <a href="javascript:requestGoogleLogout()">로그아웃_OAUTH2_연결해제+JS(POPUP)</a> |
+
+    <a href="javascript:requestGoogleLogout2()">로그아웃_OAUTH2_연결해제+JS(IFRAME)</a> |
+
+    <iframe
+            id="googleLogoutFrame"
+            style="display:none;width:0;height:0;border:0;"
+    >
+    </iframe>
+
+
+    <hr/>
+    <div th:text="${profile}"></div>
+    <hr/>
+    <div th:text="${name}"></div>
+    <hr/>
+    <div th:text="${email}"></div>
+    <hr/>
+    <div th:text="${images_url}"></div>
+
+    <script>
+        function requestGoogleLogout(){
+            // 1) 네이버 세션 로그아웃을 "팝업"으로 처리 (iframe/fetch는 네이버가 차단)
+            //    returl은 네이버가 외부도메인을 무시하므로 의존하지 않고, 팝업을 직접 닫는다.
+            const popup = window.open(
+                "https://accounts.google.com/Logout",
+                "googleLogout",
+                "width=10,height=10,left=0,top=0"   // 작게 + 화면 밖 → 거의 안 보이게
+            );
+
+            // 2) 포커스를 원래 창으로 되돌려 팝업 깜빡임 최소화
+            if (popup) { window.focus(); }
+
+            // 3) 로그아웃 처리 시간(약 1.5초) 후 팝업 닫고 → 내 페이지에서 직접 이동
+            setTimeout(function(){
+                if (popup) popup.close();
+                console.log("구글 세션 로그아웃 완료(팝업)");
+                alert("로그아웃 완료");
+                location.href = "/google/login";   // 다시 로그인 페이지로
+            }, 2500);
+        }
+
+        function requestGoogleLogout2(){
+            const frame = document.getElementById("googleLogoutFrame");
+
+            frame.src = "https://accounts.google.com/Logout";
+
+            frame.onload = function () {
+                console.log("구글 세션 로그아웃 완료(숨김)");
+                alert("구글 로그아웃 완료");
+                location.href = "/google/login";
+            }
+        }
+    </script>
+</body>
+</html>

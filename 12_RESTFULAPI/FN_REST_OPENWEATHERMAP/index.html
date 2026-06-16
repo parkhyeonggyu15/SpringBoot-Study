@@ -1,0 +1,177 @@
+<html>
+
+<head>
+	<!-- Mobile 화면 : Viewport 설정 -->
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta name="viewport"
+		content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width">
+	<meta name="robots" content="noindex">
+	<meta name="format-detection" content="telephone=no">
+	<!--STEP 1: CSS 추가하기 -->
+	<!--CDN 방식 -->
+	<!--<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"/>-->
+	<!-- Download 방식 -->
+	<link rel="stylesheet" href="css/leaflet@1.3.3/leaflet.css" />
+	<!--STEP 3: 지도 영역 관련 CSS 추가하기 -->
+	<link rel="stylesheet" href="css/main.css" />
+	<!--STEP 2: JS 추가하기 -->
+	<!--CDN 방식 -->
+	<!--<script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>-->
+	<!-- Download 방식 -->
+	<script src="js/leaflet@1.3.3/leaflet.js"></script>
+	<!-- Leaflet Plugins: Leaflet.KoreanTmsProviders 추가  -->
+	<script src="js/KoreanTmsProviders/lib/proj4.js"></script>
+	<script src="js/KoreanTmsProviders/lib/proj4leaflet.js"></script>
+	<script src="js/KoreanTmsProviders/src/Leaflet.KoreanTmsProviders.js"></script>
+</head>
+
+<body>
+	<!-- 배경지도 영역 추가하기-->
+	<div id="map" class="map"></div>
+	<script>
+		// ----------------------------------
+		// 지도 생성 + 타일설정
+		// ----------------------------------
+		var map = new L.Map('map', {
+			center: new L.LatLng(35.8714, 128.6014), //중심점 : 대구광역시청 좌표
+			zoom: 5,	//Leaflet.KoreanTmsProviders.js : resolutions기준 줌 레벨(Level 12)
+			crs: L.Proj.CRS.Daum, //Leaflet.KoreanTmsProviders.js : 새로 정의된 Daum Map CRS
+			worldCopyJump: false,  //https://leafletjs.com/reference-1.3.2.html#map-worldcopyjump 참조    
+		});
+		var baseLayers = L.tileLayer.koreaProvider('DaumMap.Street').addTo(map);
+		// ----------------------------------
+		// 중심좌표 마커 생성
+		// ----------------------------------
+		var centerMaker = L.marker([35.8714, 128.6014]).addTo(map);
+		centerMaker.bindPopup("<p><h2>대구광역시청</h2></p>").openPopup();
+
+		// 커스텀 마커 ICON
+		var customIcon = L.icon({
+			iconUrl: './img/customMaker.png',
+			iconSize: [48, 48],
+			iconAnchor: [25, 0],
+			// popupAnchor: [-3, -76],
+			// shadowUrl: 'my-icon-shadow.png',
+			// shadowSize: [68, 95],
+			// shadowAnchor: [22, 94]
+		});
+		// 커스텀 마커 생성
+		var customMaker = L.marker([35.872638, 128.600690], { icon: customIcon }).addTo(map);
+
+		// 커스텀 마커 팝업창 내용
+		const customPopupContents =
+			`<div style='width:150px;height:30px;'>
+				<h2>[중식점] 만리장성</h2>
+			</div>
+			`;
+		// 커스텀 마커 팝업창 내용 등록
+		customMaker.bindPopup(customPopupContents);
+		customMaker.on('mouseover', (e) => { console.log(e); customMaker.openPopup(); });
+		customMaker.on('mouseout', (e) => { console.log(e); customMaker.closePopup(); });
+		customMaker.on('click', (e) => { console.log(e); customMaker.openPopup(); });
+
+		//우클릭이벤트  + 마커 이동모드 설정
+		//우클릭 마우스 이동
+		// 상태 변수
+		let isFollowing = false;
+		// 마우스 움직일 때 따라다니는 로직
+		function onMouseMove(e) {
+			if (isFollowing) {
+				customMaker.setLatLng(e.latlng);
+			}
+
+		}
+
+		// 마커 우클릭 이벤트 등록
+		customMaker.on('contextmenu', function (e) {
+			if (!isFollowing) {
+				// 마커가 마우스를 따라다니게 설정
+				isFollowing = true;
+				map.on('mousemove', onMouseMove);
+				customMaker.setOpacity(0.5);  // 희미하게
+				customMaker.closePopup();
+			} else {
+				// 마커 고정 및 위도/경도 표시
+				isFollowing = false;
+				map.off('mousemove', onMouseMove);
+				customMaker.setLatLng(e.latlng);
+				customMaker.setOpacity(1);  // 원래 상태로
+
+				const lat = e.latlng.lat.toFixed(6);
+				const lng = e.latlng.lng.toFixed(6);
+				customMaker.setPopupContent(`
+				<div style='width:180px;'>
+					<strong>현재 위치</strong><br>
+					위도: ${lat}<br>
+					경도: ${lng}
+				</div>
+			`);
+				customMaker.openPopup();
+			}
+		});
+
+
+		// 지도 우클릭 이벤트
+		map.on('contextmenu', async function (e) {
+			// console.log(e.latlng);
+			const lat = e.latlng.lat;
+			const lng = e.latlng.lng;
+			console.log(lat, lng);
+
+			let weatherMain;
+			let weatherWind;
+			let weather;
+			// localhost:8080/OpenWeather/lat/lon 요청
+			await fetch(`http://localhost:8080/OpenWeather/${lat}/${lng}`)
+				.then(data => { return data.json() })
+				.then(data => { 
+					console.log(data); 
+					weatherMain = data.main;
+					weatherWind = data.wind;
+					weather = data.weather;
+				})
+				.catch(error => { console.log(error); });
+
+			// 비동기 요청 처리함수 (fetch)
+			await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&layer=address`)
+				.then((response) => { return response.json(); })	//성공시
+				.then((data) => {
+					// console.log(data);
+					const displayName = data && data.display_name
+					const suberb = data && data.address.suberb;
+					const village = data && data.address.village;
+					console.log(displayName, suberb, village);
+
+
+
+
+					L
+						.popup()
+						.setLatLng(e.latlng)
+						.setContent(`<div style='width:220px;'>
+						위도 : ${lat}<br/>
+						경도 : ${lng}<br/>
+						주소 : 
+						<a 
+							href='https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${displayName}'
+							target='_blank'
+						>
+							${displayName}
+						</a>
+						<br/>
+						${JSON.stringify(weatherMain)}<br/>
+						${JSON.stringify(weatherWind)}<br/>
+						${JSON.stringify(weather)}<br/>
+						</div>`)
+						.openOn(map);
+
+
+				})	//성공시
+				.catch((error) => { console.log(error) }) 		//실패시
+		});
+
+
+	</script>
+</body>
+
+</html>

@@ -7,50 +7,39 @@
 <body>
 
     <h1>MAIN PAGE /Naver</h1>
-    <a href="/Naver/logout">로그아웃(동기)(/Naver/logout)</a>
-    <a href="javascript:requestNaverLogin()">로그아웃(팝업창이용)</a>
+    <a  href="/Naver/logout">로그아웃(동기)(/Naver/logout)</a>
+    <a  href="javascript:requestNaverLogout()">로그아웃(팝업창이용)</a>
 
     <hr/>
     <h2>naverTokenResponse</h2>
-        <div th:text="${naverTokenResponse}"></div>
-        <hr/>
+    <div th:text="${naverTokenResponse}"></div>
+    <hr/>
     <h2>naverProfileResponse</h2>
-        <div th:text="${naverProfileResponse}"></div>
-        <hr/>
+    <div th:text="${naverProfileResponse}"></div>
+    <hr/>
 
-    <iframe id="naverLogoutFrame" style="display:none;width:0;height:0;border:0;"></iframe>
+    <iframe id="naverLogoutFrame" style="display:none;width:0;height:0;border:0"></iframe>
+
     <script>
-
-        function requestNaverLogin(){
-            //1) 네이버 세션 로그아웃을 "팝업"으로 처리(iframe/fetch는 네이버가 차단)
-            // returl
+        function requestNaverLogout(){
+            // 1) 네이버 세션 로그아웃을 "팝업"으로 처리 (iframe/fetch는 네이버가 차단)
+            //    returl은 네이버가 외부도메인을 무시하므로 의존하지 않고, 팝업을 직접 닫는다.
             const popup = window.open(
-                "http://nid.naver.com/nidlogin.logout",
+                "https://nid.naver.com/nidlogin.logout",
                 "naverLogout",
-                "width=10,height=10,left=0.top=0"
+                "width=10,height=10,left=0,top=0"   // 작게 + 화면 밖 → 거의 안 보이게
             );
 
-            //2) 포커스를 원래 참으로 되돌려 팝업 깜빡임 최소화
-            if(popup){window.focus();}
+            // 2) 포커스를 원래 창으로 되돌려 팝업 깜빡임 최소화
+            if (popup) { window.focus(); }
 
-            // 3) 로그아웃 처리 시간(약1.5초) 후 팝업 닫고 -> 내 페이지에서 직접 이동
+            // 3) 로그아웃 처리 시간(약 1.5초) 후 팝업 닫고 → 내 페이지에서 직접 이동
             setTimeout(function(){
-                if(popup)popup.close();
+                if (popup) popup.close();
                 console.log("네이버 세션 로그아웃 완료(팝업)");
                 alert("로그아웃 완료");
-                location.href = "/Naver/login"; //다시 로그인 페이지로
+                location.href = "/Naver/login";   // 다시 로그인 페이지로
             }, 2500);
-
-           // const frame = document.getElementById("naverLogoutFrame");
-           // frame.src = "https://nid.naver.com/nidlogin.logout?returl=https://www.naver.com/";
-           //  // https://nid.naver.com/nidlogin.logout?returl=https://www.naver.com/
-           //  frame.onload = function(){
-           //      console.log("네이버 세션 로그아웃 완료(숨김처리됨)");
-           //      alert("로그아웃 완료");
-           //      // location.reload();   //새로고침
-           //      location.href="/Naver/login";
-
-            // }
         }
     </script>
 </body>

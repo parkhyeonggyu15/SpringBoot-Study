@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>알림 발송</title>
+</head>
+<body>
+    <h2>알림 발송</h2>
+
+    <input id="title" placeholder="제목"><br>
+    <textarea id="body" placeholder="내용"></textarea><br>
+    <button id="send">발송</button>
+    <div id="status"></div>
+
+    <hr>
+    <button id="mkTunnel">클라우드플레어 주소 만들기</button>
+    <div id="tunnel"></div>
+
+    <p><a href="/fcm/receive" target="_blank">수신 화면(/fcm/receive)</a></p>
+
+    <script>
+        // send.html -> /api/fcm/send -> FcmService -> Firebase -> receive.html
+        document.getElementById('send').addEventListener('click', () => {
+            const title = document.getElementById('title').value.trim() || '(제목 없음)';
+            const body  = document.getElementById('body').value.trim()  || '(내용 없음)';
+            fetch('/api/fcm/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, body })
+            })
+                .then((res) => res.text())
+                .then((text) => { document.getElementById('status').textContent = text; });
+        });
+
+        // 클라우드플레어 주소 만들기 -> 백엔드가 cloudflared 실행 후 HTTPS 주소 반환
+        document.getElementById('mkTunnel').addEventListener('click', () => {
+            const el = document.getElementById('tunnel');
+            el.textContent = '터널 생성 중... (최대 30초)';
+            fetch('/api/fcm/tunnel', { method: 'POST' })
+                .then((res) => res.text().then((text) => ({ ok: res.ok, url: text.trim() })))
+                .then(({ ok, url }) => {
+                    if (ok && url.startsWith('http')) {
+                        el.innerHTML =
+                            '<a href="' + url + '/fcm/send" target="_blank">' + url + '/fcm/send</a><br>' +
+                            '<a href="' + url + '/fcm/receive" target="_blank">' + url + '/fcm/receive</a>';
+                    } else {
+                        el.textContent = url;
+                    }
+                });
+        });
+    </script>
+</body>
+</html>

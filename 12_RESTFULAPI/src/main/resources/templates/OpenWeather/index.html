@@ -124,14 +124,14 @@
 
         // localhost:8080/OpenWeather/lat/lon 요청
         await fetch(`/OpenWeather/${lat}/${lng}`)
-            .then(data=>{return data.json();})
-            .then(data=>{
+            .then(data => { return data.json() })
+            .then(data => {
                 console.log(data);
                 weatherMain = data.main;
                 weatherWind = data.wind;
                 weather = data.weather;
             })
-            .catch(error=>{console.log(error);})
+            .catch(error => { console.log(error); });
 
         // 비동기 요청 처리함수 (fetch)
         await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&layer=address`)
@@ -142,6 +142,9 @@
                 const suberb = data && data.address.suberb;
                 const village = data && data.address.village;
                 console.log(displayName, suberb, village);
+
+
+
 
                 L
                     .popup()
@@ -157,9 +160,9 @@
 							${displayName}
 						</a>
 						<br/>
-						${JSON.stringify(weatherMain)}</br>
-						${JSON.stringify(weatherWind)}</br>
-						${JSON.stringify(weather)}</br>
+						${JSON.stringify(weatherMain)}<br/>
+						${JSON.stringify(weatherWind)}<br/>
+						${JSON.stringify(weather)}<br/>
 						</div>`)
                     .openOn(map);
 

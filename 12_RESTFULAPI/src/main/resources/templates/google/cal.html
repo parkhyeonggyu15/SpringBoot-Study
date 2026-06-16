@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+
+
+    <meta charset='utf-8' />
+    <!--BS5-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- FULLCALENDAR   -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.20/index.global.min.js"></script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                googleCalendarApiKey: '-',
+                events: {
+                    googleCalendarId: '-@group.calendar.google.com'
+                },
+                dateClick: function(info) {
+                    console.log("clicked...",info);
+                    const dateModalBtn = document.querySelector(".date-modal-btn");
+                    dateModalBtn.click();
+                    // console.log('Date: ' + info.dateStr);
+                    // console.log('Resource ID: ' + info.resource.id);
+                },
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault();
+                    console.log(info);
+                    console.log(info.event._def.title);
+                    console.log(info.event._def.extendedProps.description);
+
+                    // alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+                    // alert('View: ' + info.view.type);
+                    // change the border color just for fun
+                    // info.el.style.borderColor = 'red';
+                }
+
+            });
+
+
+            calendar.render();
+        });
+
+    </script>
+</head>
+<body>
+<div id='calendar'></div>
+
+
+
+
+<!-- Button trigger modal -->
+<button type="button" style="display:none;" class="btn btn-primary date-modal-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade date-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body" style="min-height:400px;">
+
+                <form action="/google/cal" method="post">
+                    <div>
+                        <input type="datetime-local" name="start">
+                        <input type="datetime-local" name="end">
+                    </div>
+                    <div>
+                        <input type="text" name="summary">
+                    </div>
+                    <div>
+                        <textarea  name="description"></textarea>
+                    </div>
+                    <div>
+                        <button>POST</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

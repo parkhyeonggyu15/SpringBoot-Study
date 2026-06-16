@@ -94,7 +94,6 @@ public class OepnData_01_Controller {
     }
     @Data
     private static class Root{
-
         public Response response;
     }
 

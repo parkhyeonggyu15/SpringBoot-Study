@@ -17,14 +17,14 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/Kakao/pay")
 public class C04KakaoPayController {
 
-    private String SECRET_KEY="내 시크릿 키";
+    private String SECRET_KEY="-";
 
     @GetMapping
     @ResponseBody
     public void req(){
         log.info("GET /Kakao/pay...");
 
-        //요청파라미터
+        //요청파라미터 정리
         String url = "https://open-api.kakaopay.com/online/v1/payment/ready";
 
         //요청 헤더
@@ -45,8 +45,10 @@ public class C04KakaoPayController {
         params.put("cancel_url","http://127.0.0.1:8080/Kakao/pay/cancel");
         params.put("fail_url","http://127.0.0.1:8080/Kakao/pay/fail");
 
-        //요청 엔티티(헤더 + 바디(params))
-        HttpEntity<JSONObject> entity = new HttpEntity<>(params,header);
+
+
+        //요청 엔터티(헤더 + 바디(params))
+        HttpEntity< JSONObject > entity = new HttpEntity<>(params,header);
 
         //응답 = 요청
         RestTemplate restTemplate = new RestTemplate();
@@ -55,19 +57,14 @@ public class C04KakaoPayController {
         System.out.println(response.getBody());
     }
 
+
     @GetMapping("/success")
     @ResponseBody
-    public void success(){
-        log.info("GET /Kakao.success...결제성공시 이동되는 위치");
-    }
+    public void success(){log.info("GET /Kakao.success.... 결제성공후 이동되는 위치");}
     @GetMapping("/cancel")
     @ResponseBody
-    public void cancel(){
-        log.info("GET /Kakao.success...결제취소시 이동되는 위치");
-    }
+    public void cancel(){log.info("GET /Kakao.cancel.... 결제취소시 이동되는 위치");}
     @GetMapping("/fail")
     @ResponseBody
-    public void fail(){
-        log.info("GET /Kakao.success...결제실패시 이동되는 위치");
-    }
+    public void fail(){log.info("GET /Kakao.fail.... 결제실패시 이동되는 위치");}
 }

@@ -20,18 +20,17 @@ import java.util.Map;
 @RequestMapping("/OpenWeather")
 public class OpenWeatherMapController {
     private String server="https://api.openweathermap.org/data/2.5/weather";
-    private String appid="a84b6de672330be8d068b5e4b529b816";
-    private String pageNo = "1";
-    private String numOfRows = "10";
+    private String appid="b7a263e63bfe790ff0081e9b619e7c91";
 
     //동기요청방식(SPRINGBOOT 단독 FN + BN)
     @GetMapping("/index")
     public String page(){
-        log.info("GET /OpenWeather ...");
+        log.info("GET /OpenWeather...");
         return "OpenWeather/index";
     }
 
-    //비동기요청방식(BN / FN 분할)
+
+    //비동기요청방식(BN  / FN 분할)
     @ResponseBody
     @CrossOrigin(originPatterns = "*")
     @GetMapping("/{lat}/{lon}")
@@ -41,6 +40,7 @@ public class OpenWeatherMapController {
     ){
         Map<String,Object> responseData = new HashMap<>();
 
+        log.info("GET /OepnWeather/{}/{}",lat,lon);
         URI uri = UriComponentsBuilder.fromHttpUrl(server)
                 .queryParam("appid", appid)  // 디코딩 키
                 .queryParam("lat", lat)
@@ -48,7 +48,6 @@ public class OpenWeatherMapController {
                 .encode()                              // 한 번만 인코딩
                 .build()
                 .toUri();
-       log.info("GET /Open/Weather/{}/{}",lat,lon);
 
         //요청 헤더(x)
 
@@ -66,24 +65,18 @@ public class OpenWeatherMapController {
         responseData.put("main",response.getBody().getMain());
         responseData.put("wind",response.getBody().getWind());
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
-    }
 
-    // import com.fasterxml.jackson.databind.ObjectMapper; // version 2.11.1
-// import com.fasterxml.jackson.annotation.JsonProperty; // version 2.11.1
-/* ObjectMapper om = new ObjectMapper();
-Root root = om.readValue(myJsonString, Root.class); */
+    }
 
     @Data
     private static class Clouds{
         public int all;
     }
-
     @Data
     private static class Coord{
         public double lon;
         public double lat;
     }
-
     @Data
     private static class Main{
         public double temp;
@@ -95,7 +88,6 @@ Root root = om.readValue(myJsonString, Root.class); */
         public int sea_level;
         public int grnd_level;
     }
-
     @Data
     private static class Root{
         public Coord coord;
@@ -112,14 +104,12 @@ Root root = om.readValue(myJsonString, Root.class); */
         public String name;
         public int cod;
     }
-
     @Data
     private static class Sys{
         public String country;
         public int sunrise;
         public int sunset;
     }
-
     @Data
     private static class Weather{
         public int id;
@@ -127,16 +117,12 @@ Root root = om.readValue(myJsonString, Root.class); */
         public String description;
         public String icon;
     }
-
     @Data
     private static class Wind{
         public double speed;
         public int deg;
         public double gust;
     }
-
-
-
 
 
 }

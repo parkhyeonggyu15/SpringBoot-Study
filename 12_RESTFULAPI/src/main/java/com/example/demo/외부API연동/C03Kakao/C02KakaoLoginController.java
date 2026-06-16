@@ -23,15 +23,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-
 @Controller
 @Slf4j
 @RequestMapping("/Kakao")
 public class C02KakaoLoginController {
 
-    private String CLIENT_ID="내 토큰";
-    private String REDIRECT_URI="http://192.168.5.13:8080/Kakao/callback";
-    private String LOGOUT_REDIRECT_URI="http://192.168.5.13:8080/Kakao/login";
+    private String CLIENT_ID="";
+    private String REDIRECT_URI="http://192.168.5.50:8080/Kakao/callback";
+    private String LOGOUT_REDIRECT_URI="http://192.168.5.50:8080/Kakao/login";
 
     private KakaoTokenResponse kakaoTokenResponse;
     private KakaoProfileResponse kakaoProfileResponse;
@@ -39,7 +38,7 @@ public class C02KakaoLoginController {
 
     @GetMapping("/login")
     public String login(){
-        log.info("GET /login...");
+        log.info("GET /login....");
         return "redirect:https://kauth.kakao.com/oauth/authorize?client_id="+CLIENT_ID+"&redirect_uri="+REDIRECT_URI+"&response_type=code";
     }
     @GetMapping("/callback")
@@ -53,15 +52,14 @@ public class C02KakaoLoginController {
         params.add("grant_type","authorization_code");
         params.add("client_id",CLIENT_ID);
         params.add("redirect_uri",REDIRECT_URI);
-
         params.add("code",code);
 
         //요청 헤더
         HttpHeaders header = new HttpHeaders();
         header.add("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
 
-        //요청 엔티티(헤더 + 바디(params))
-        HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity<>(params,header);
+        //요청 엔터티(헤더 + 바디(params))
+        HttpEntity< MultiValueMap<String,String> > entity = new HttpEntity<>(params,header);
 
         //응답 = 요청
         RestTemplate restTemplate = new RestTemplate();
@@ -70,10 +68,11 @@ public class C02KakaoLoginController {
 
 //        System.out.println(response.getBody());
         this.kakaoTokenResponse = response.getBody();
+
         return "redirect:/Kakao";
     }
 
-    //Endpoint : /kakao
+    //Endpoint : /Kakao
     @GetMapping
     public String main(Model model){
         log.info("GET /Kakao..." + this.kakaoTokenResponse);
@@ -89,10 +88,10 @@ public class C02KakaoLoginController {
 
         //요청 헤더
         HttpHeaders header = new HttpHeaders();
-        header.add("Authorization","Bearer " +kakaoTokenResponse.getAccess_token());
+        header.add("Authorization","Bearer "+kakaoTokenResponse.getAccess_token());
         header.add("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
 
-        //요청 엔티티(헤더 + 바디(params))
+        //요청 엔터티(헤더 + 바디(params))
         HttpEntity entity = new HttpEntity(header);
 
         //응답 = 요청
@@ -101,18 +100,16 @@ public class C02KakaoLoginController {
         System.out.println(response.getBody());
         this.kakaoProfileResponse = response.getBody();
 
-
         model.addAttribute("kakaoProfileResponse",this.kakaoProfileResponse);
         model.addAttribute("profile_images",kakaoProfileResponse.getProperties().getProfile_image());
+
         return "Kakao/main";
     }
-
 
     @GetMapping("/logout1")
     public String logout1(){
         //DOCS : https://developers.kakao.com/docs/ko/kakaologin/rest-api#logout
         log.info("GET /logout1");
-
         //요청파라미터 정리
         String url = "https://kapi.kakao.com/v1/user/logout";
 
@@ -124,8 +121,8 @@ public class C02KakaoLoginController {
         header.add("Authorization","Bearer "+kakaoTokenResponse.getAccess_token());
         header.add("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
 
-        //요청 엔티티(헤더 + 바디(params))
-        HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity<>(params,header);
+        //요청 엔터티(헤더 + 바디(params))
+        HttpEntity< MultiValueMap<String,String> > entity = new HttpEntity<>(params,header);
 
         //응답 = 요청
         RestTemplate restTemplate = new RestTemplate();
@@ -136,6 +133,7 @@ public class C02KakaoLoginController {
     @GetMapping("/logout2")
     public String logout2(){
         log.info("GET /logout2");
+
         //요청파라미터 정리
         String url = "https://kapi.kakao.com/v1/user/unlink";
 
@@ -147,12 +145,14 @@ public class C02KakaoLoginController {
         header.add("Authorization","Bearer "+kakaoTokenResponse.getAccess_token());
         header.add("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
 
-        //요청 엔티티(헤더 + 바디(params))
-        HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity<>(params,header);
+
+        //요청 엔터티(헤더 + 바디(params))
+        HttpEntity< MultiValueMap<String,String> > entity = new HttpEntity<>(params,header);
 
         //응답 = 요청
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST,entity,String.class);
+
         return "redirect:/Kakao/login";
     }
     @GetMapping("/logout3")
@@ -160,17 +160,25 @@ public class C02KakaoLoginController {
         log.info("GET /logout3");
 
         return "redirect:https://kauth.kakao.com/oauth/logout?client_id="+CLIENT_ID+"&logout_redirect_uri="+LOGOUT_REDIRECT_URI;
+
+    }
+
+    @GetMapping("/message")
+    public void message_page (){
+        log.info("GET /Kakao/message...");
     }
     @GetMapping("/getMessageCode")
     public String getMessageCode(){
-        log.info("GET /Kakao/getMessageCode...");
+        log.info("GET /Kakao/getMessageCode....");
         return "redirect:https://kauth.kakao.com/oauth/authorize?client_id="+CLIENT_ID+"&redirect_uri="+REDIRECT_URI+"&response_type=code&scope=talk_message,friends";
     }
 
     @GetMapping("/message/me/{message}")
     @ResponseBody
     public void message_me(@PathVariable String message){
-        log.info("GET /Kakao/message/me...",message);
+
+        //DOC : https://developers.kakao.com/docs/ko/kakaotalk-message/rest-api
+        log.info("GET /Kakao/message/me...{}",message);
         //요청파라미터 정리
         String url = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
 
@@ -190,31 +198,32 @@ public class C02KakaoLoginController {
         header.add("Authorization","Bearer "+kakaoTokenResponse.getAccess_token());
         header.add("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
 
-        //요청 엔티티(헤더 + 바디(params))
-        HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity<>(params,header);
+
+        //요청 엔터티(헤더 + 바디(params))
+        HttpEntity< MultiValueMap<String,String> > entity = new HttpEntity<>(params,header);
 
         //응답 = 요청
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST,entity,String.class);
+
     }
 
     @GetMapping("/friends")
     @ResponseBody
     public void getFriends(){
-        log.info("GET /Kakao/friends");
+        log.info("GET /Kakao/friends...");
 
         //요청파라미터 정리
         String url = "https://kapi.kakao.com/v1/api/talk/friends";
 
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
 
-
-        //요청 헤더z
+        //요청 헤더
         HttpHeaders header = new HttpHeaders();
         header.add("Authorization","Bearer "+kakaoTokenResponse.getAccess_token());
 
-        //요청 엔티티(헤더 + 바디(params))
-        HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity<>(params,header);
+        //요청 엔터티(헤더 + 바디(params))
+        HttpEntity entity = new HttpEntity<>(header);
 
         //응답 = 요청
         RestTemplate restTemplate = new RestTemplate();
@@ -227,18 +236,22 @@ public class C02KakaoLoginController {
     @GetMapping("/message/friends/{message}")
     @ResponseBody
     public void message_friends(@PathVariable String message){
-        log.info("GET /Kakao/message/friends...",message);
+
+        //DOC : https://developers.kakao.com/docs/ko/kakaotalk-message/rest-api
+        log.info("GET /Kakao/message/friends...{}",message);
         //요청파라미터 정리
         String url = "https://kapi.kakao.com/v1/api/talk/friends/message/default/send";
 
         MultiValueMap<String,Object> params = new LinkedMultiValueMap<>();
 
-        String[] uuids = kakaoFriendsResponse.getElements()
-                                                .stream()
-                                                .map((el ->{return el.getUuid();} ))
-                                                .collect(Collectors.toList())
-                                                .toArray(String[]::new);
-        JSONArray receiver_uuids = new JSONArray();
+
+       String[] uuids =  kakaoFriendsResponse       .getElements()
+                                                    .stream()
+                                                    .map((el)->{return el.getUuid();})
+                                                    .collect(Collectors.toList())
+                                                    .toArray(String[]::new);
+
+        JSONArray receiver_uuids = new JSONArray(); // [{},{}]
         for(String uuid : uuids){
             receiver_uuids.add(uuid);
         }
@@ -258,16 +271,19 @@ public class C02KakaoLoginController {
         header.add("Authorization","Bearer "+kakaoTokenResponse.getAccess_token());
         header.add("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
 
-        //요청 엔티티(헤더 + 바디(params))
-        HttpEntity<MultiValueMap<String,Object>> entity = new HttpEntity<>(params,header);
+
+        //요청 엔터티(헤더 + 바디(params))
+        HttpEntity< MultiValueMap<String,Object> > entity = new HttpEntity<>(params,header);
 
         //응답 = 요청
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST,entity,String.class);
+
     }
-    //-------------------------------------------
-    //Kakao ACCESS TOKEN CLASS
-    //-------------------------------------------
+
+    //---------------------------------------
+    //KAKAO ACCESS TOKEN CLASS
+    //---------------------------------------
     @Data
     private static class KakaoTokenResponse{
         public String access_token;
@@ -277,9 +293,9 @@ public class C02KakaoLoginController {
         public String scope;
         public int refresh_token_expires_in;
     }
-    //-------------------------------------------
-    //Kakao PROFLIE CLASS
-    //-------------------------------------------
+    //---------------------------------------
+    //KAKAO PROFILE CLASS
+    //---------------------------------------
     @Data
     private static class KakaoAccount{
         public boolean profile_nickname_needs_agreement;
@@ -313,19 +329,18 @@ public class C02KakaoLoginController {
         public KakaoAccount kakao_account;
     }
 
-    //-------------------------------------------
-    //Kakao FRIENDS CLASS
-    //-------------------------------------------
+    //---------------------------------------
+    //KAKAO FRIENDS CLASS
+    //---------------------------------------
     @Data
     private static class Element{
         public String profile_nickname;
         public String profile_thumbnail_image;
         public boolean allowed_msg;
-        public long id;
+        public Object id;
         public String uuid;
         public boolean favorite;
     }
-
     @Data
     private static class KakaoFriendsResponse{
         public ArrayList<Element> elements;
