@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BOOK LIST (EX)</title>
+</head>
+<body>
+<h1>/exbook/list PAGE</h1>
+
+<div th:text="${message}"></div>
+
+<p><a th:href="@{/exbook/add}">+ 도서추가</a></p>
+
+<table border="1" cellpadding="5">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>TITLE</th>
+        <th>AUTHOR</th>
+        <th>PRICE</th>
+        <th>관리</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${bookList}">
+        <td th:text="${book.id}"></td>
+        <td th:text="${book.title}"></td>
+        <td th:text="${book.author}"></td>
+        <td th:text="${book.price}"></td>
+        <td>
+            <a th:href="@{/exbook/update(id=${book.id})}">수정</a>
+            <form th:action="@{/exbook/delete}" method="post" style="display:inline">
+                <input type="hidden" name="id" th:value="${book.id}"/>
+                <button>삭제</button>
+            </form>
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(bookList)}">
+        <td colspan="5">등록된 도서가 없습니다. (EX07 을 완성하세요)</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

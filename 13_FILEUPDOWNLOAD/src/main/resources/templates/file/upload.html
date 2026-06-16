@@ -12,6 +12,20 @@
             FILE : <input type="file" name="file" /> </br>
             <button>업로드[단일파일]</button>
         </form>
+        <hr/>
+        <h2>다중 파일 업로드</h2>
+        <form action="/file/uploads" method="post" enctype="multipart/form-data">
+            FILE : <input type="file" name="files" multiple /> </br>
+            <button>업로드[다중파일]</button>
+        </form>
+        <hr/>
+        <h2>DTO 파일 업로드</h2>
+        <form action="/file/upload_dto" method="post" enctype="multipart/form-data">
+            ID : <input type="text" name="id"><br/>
+            CATEGORY : <input type="text" name="category"><br/>
+            FILE : <input type="file" name="files" multiple /> </br>
+            <button>업로드[DTO]</button>
+        </form>
 
 </body>
 </html>
