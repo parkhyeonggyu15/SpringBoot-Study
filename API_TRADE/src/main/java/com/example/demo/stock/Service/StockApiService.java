@@ -1,15 +1,18 @@
 package com.example.demo.stock.Service;
 
+import com.example.demo.stock.Entity.CorpCodeMapping;
+import com.example.demo.stock.Entity.FinancialStatement;
 import com.example.demo.stock.Entity.StockPrice;
-import com.example.demo.stock.Entity.StockReport;
+import com.example.demo.stock.Repository.CorpCodeMappingRepository;
+import com.example.demo.stock.Repository.FinancialStatementRepository;
 import com.example.demo.stock.Repository.StockPriceRepository;
-import com.example.demo.stock.Repository.StockReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate; // 💡 변경: RestTemplate 임포트
 import org.springframework.web.util.UriComponentsBuilder;
+import java.time.Year;
 import java.util.stream.Collectors;
 import java.net.URI;
 import java.util.*;
@@ -19,8 +22,9 @@ import java.util.*;
 public class StockApiService {
 
     private final StockPriceRepository stockPriceRepository;
-    private final StockReportRepository stockReportRepository;
     private final DartCorpCodeService dartCorpCodeService;
+    private final CorpCodeMappingRepository corpCodeMappingRepository;
+    private final FinancialStatementRepository financialStatementRepository;
 
     // 💡 Netty 대신 자바 기본 보안 설정을 100% 따르는 RestTemplate을 선언합니다.
     private final RestTemplate restTemplate = new RestTemplate();
@@ -30,6 +34,15 @@ public class StockApiService {
 
     @Value("${OpenDartKey}")
     private String openDartKey;
+
+    // KRX 종목코드에 대응하는 corp_code_mapping row의 시가총액을 갱신합니다. 매핑이 없으면 건너뜁니다.
+    private void updateMarketCap(String stockCode, long mrktTotAmt) {
+        corpCodeMappingRepository.findByStockCode(stockCode)
+                .ifPresent(mapping -> {
+                    mapping.updateMrktTotAmt(mrktTotAmt);
+                    corpCodeMappingRepository.save(mapping);
+                });
+    }
 
     /**
      * 1. 공공데이터포털 - 주식시세정보 가져와서 DB 저장
@@ -69,8 +82,9 @@ public class StockApiService {
                             .build();
 
                     stockPriceRepository.save(stockPrice);
+                    updateMarketCap(stockCode, stockPrice.getMrktTotAmt());
 
-                    System.out.println("====== [공공데이터 API 진짜 결과] ======");
+                    System.out.println("====== [공공데이터 API 결과] ======");
                     System.out.println(response);
                     System.out.println("=====================================");
                 }
@@ -82,26 +96,34 @@ public class StockApiService {
 
 
 
+    /**
+     * 2. 오픈다트 - 다중회사 주요계정(fnlttMultiAcnt) 가져와서 DB 저장
+     *    사업보고서(11011) 기준 작년도 재무 데이터를 조회합니다.
+     */
     @Transactional
-    public void fetchAndSaveStockReports(String stockCode) {
+    public void fetchAndSaveFinancialStatement(String stockCode) {
         String cleanStockCode = stockCode.trim();
 
-        // 💡 KRX 종목코드 -> DART 고유번호(corp_code) 변환
         String corpCode = dartCorpCodeService.getCorpCode(cleanStockCode);
         if (corpCode == null) {
-            System.out.println(">> [알림] " + cleanStockCode + " 종목의 DART corp_code 매핑을 찾을 수 없어 건너뜁니다.");
+            System.out.println(">> [알림] " + cleanStockCode + " 종목의 DART corp_code 매핑을 찾을 수 없어 재무정보 조회를 건너뜁니다.");
             return;
         }
 
-        String fixedUrl = UriComponentsBuilder.fromUriString("https://opendart.fss.or.kr/api/majorstock.json") // ✅ 소문자
+        String bsnsYear = String.valueOf(Year.now().getValue() - 1); // 작년도 고정
+        String reprtCode = "11011"; // 사업보고서 고정
+
+        String url = UriComponentsBuilder.fromUriString("https://opendart.fss.or.kr/api/fnlttMultiAcnt.json")
                 .queryParam("crtfc_key", openDartKey)
-                .queryParam("corp_code", corpCode) // ✅ 6자리 종목코드 대신 8자리 고유번호
+                .queryParam("corp_code", corpCode)
+                .queryParam("bsns_year", bsnsYear)
+                .queryParam("reprt_code", reprtCode)
                 .build()
                 .toUriString();
 
-        Map<String, Object> response = restTemplate.getForObject(fixedUrl, Map.class);
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        System.out.println("====== [오픈다트 API 진짜 결과] ======");
+        System.out.println("====== [오픈다트 주요계정 API 결과] ======");
         System.out.println(response);
         System.out.println("=====================================");
 
@@ -112,26 +134,43 @@ public class StockApiService {
                 List<Map<String, String>> list = (List<Map<String, String>>) response.get("list");
                 if (list != null) {
                     for (Map<String, String> item : list) {
-                        StockReport report = StockReport.builder()
+                        FinancialStatement statement = FinancialStatement.builder()
                                 .stockCode(cleanStockCode)
-                                .rceptNo(item.get("rcept_no"))
-                                .reportNm(item.get("report_nm"))
-                                .rceptDt(item.get("rcept_dt"))
-                                .bsnNm(item.get("corp_nm"))
+                                .corpCode(corpCode)
+                                .bsnsYear(bsnsYear)
+                                .reprtCode(reprtCode)
+                                .fsDiv(item.get("fs_div"))
+                                .sjDiv(item.get("sj_div"))
+                                .accountNm(item.get("account_nm"))
+                                .thstrmAmount(parseAmount(item.get("thstrm_amount")))
+                                .frmtrmAmount(parseAmount(item.get("frmtrm_amount")))
                                 .build();
 
-                        stockReportRepository.save(report);
+                        financialStatementRepository.save(statement);
                     }
-                    System.out.println(">> " + cleanStockCode + " 종목 지분공시 DB 저장 완료 (건수: " + list.size() + ")");
+                    System.out.println(">> " + cleanStockCode + " 종목 주요계정 DB 저장 완료 (건수: " + list.size() + ")");
                 }
             } else {
                 String message = String.valueOf(response.get("message"));
-                System.out.println(">> [알림] 오픈다트 저장 건너뜀 (상태코드: " + status + " / 메시지: " + message + ")");
+                System.out.println(">> [알림] 오픈다트 주요계정 저장 건너뜀 (상태코드: " + status + " / 메시지: " + message + ")");
             }
         }
     }
+
+    // DART 금액 문자열(콤마 포함 가능)을 Long으로 변환합니다. 값이 없으면 null을 반환합니다.
+    private Long parseAmount(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(raw.replace(",", "").trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     /**
-     * 3. [동적 수집] 시가총액 기준 상위 100개 기업을 자동으로 판별하여 주가 및 공시 저장
+     * 3. [동적 수집] 시가총액 기준 상위 100개 기업을 자동으로 판별하여 주가 및 재무정보 저장
      */
     public void fetchAndSaveTop100ByMarketCap() {
         // 💡 1단계: 오늘(또는 가장 최근 영업일)의 전체 상장 주식 정보를 가져오기 위한 URL 생성
@@ -197,9 +236,10 @@ public class StockApiService {
                             .build();
 
                     stockPriceRepository.save(stockPrice);
+                    updateMarketCap(stockCode, stockPrice.getMrktTotAmt());
 
-                    // B. 오픈다트 지분공시 연동 (오픈다트는 해당 종목코드로 실시간 조회가 필요하므로 기존 메소드 호출)
-                    fetchAndSaveStockReports(stockCode);
+                    // B. 오픈다트 주요계정(재무정보) 연동
+                    fetchAndSaveFinancialStatement(stockCode);
 
                     // 🔥 트래픽 과부하 방지를 위한 최소한의 디레이 (오픈다트 연속 호출 안정성 확보)
                     Thread.sleep(400);

@@ -14,8 +14,8 @@ public class StockBatchScheduler {
     private final StockApiService stockApiService;
 
     // 평일 월~금 오후 6시 정각에 외부 데이터 수집 실행
-    @Scheduled(cron = "0 0 18 * * MON-FRI")
-//    @Scheduled(initialDelay = 1000, fixedDelay = 3600000)
+//    @Scheduled(cron = "0 0 18 * * MON-FRI")
+    @Scheduled(initialDelay = 1000, fixedDelay = 3600000)
     public void batchJob() {
         try {
             // 시가총액 상위 100개 기업의 주가/공시 데이터를 한 번에 수집

@@ -19,6 +19,5 @@ public class StockPrice {
     private Long hipr;          // 고가
     private Long lopr;          // 저가
     private Long trqu;          // 거래량
-    @Column(name = "mrkt_tot_amt")
     private Long mrktTotAmt;    //시가총액
 }
