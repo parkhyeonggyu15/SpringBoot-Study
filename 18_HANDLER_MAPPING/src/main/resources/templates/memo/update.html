@@ -1,0 +1,34 @@
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+<h1>
+    PAGE : /memo/update
+</h1>
+
+<form action="/memo/update" method="POST">
+
+    <input name="id" type="hidden" th:value="${dto.id}" />
+    <div>
+        <label>제목</label>
+        <input name="title" th:value="${dto.title}" />&nbsp;&nbsp;<span style="font-size:.8rem;" th:text="${title}"></span>
+    </div>
+
+    <div>
+        <label>작성자</label>
+        <input name="writer" th:value="${dto.writer}" /> &nbsp;&nbsp;<span style="font-size:.8rem;"th:text="${writer}"></span>
+    </div>
+    <div>
+        <label>내용</label>
+        <textarea name="text" th:text="${dto.text}"  ></textarea>&nbsp;&nbsp;<span style="font-size:.8rem;" th:text="${text}"></span>
+    </div>
+
+    <div>
+        <input type="submit" value="저장" />
+    </div>
+</form>
+
+
+</body>
+</html>

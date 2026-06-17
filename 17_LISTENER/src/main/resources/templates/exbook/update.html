@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BOOK UPDATE (EX)</title>
+</head>
+<body>
+<h1>/exbook/update PAGE</h1>
+
+<form th:action="@{/exbook/update}" method="post">
+    <div>
+        <label>ID :</label> <span th:text="${book.id}"></span> <br/>
+        <input name="id" th:value="${book.id}" readonly/>
+    </div>
+    <div>
+        <label>TITLE :</label> <br/>
+        <input name="title" th:value="${book.title}"/>
+    </div>
+    <div>
+        <label>AUTHOR :</label> <br/>
+        <input name="author" th:value="${book.author}"/>
+    </div>
+    <div>
+        <label>PRICE :</label> <br/>
+        <input type="number" name="price" th:value="${book.price}"/>
+    </div>
+    <div>
+        <button>도서수정</button>
+        <a th:href="@{/exbook/list}">목록</a>
+    </div>
+</form>
+
+</body>
+</html>

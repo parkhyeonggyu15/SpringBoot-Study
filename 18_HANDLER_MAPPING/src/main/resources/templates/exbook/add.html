@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BOOK ADD (EX)</title>
+</head>
+<body>
+<h1>/exbook/add PAGE</h1>
+
+<form th:action="@{/exbook/add}" method="post">
+    <div>
+        <label>ID :</label> <br/>
+        <input name="id"/>
+    </div>
+    <div>
+        <label>TITLE :</label> <br/>
+        <input name="title"/>
+    </div>
+    <div>
+        <label>AUTHOR :</label> <br/>
+        <input name="author"/>
+    </div>
+    <div>
+        <label>PRICE :</label> <br/>
+        <input type="number" name="price"/>
+    </div>
+    <div>
+        <button>도서등록</button>
+        <a th:href="@{/exbook/list}">목록</a>
+    </div>
+</form>
+
+</body>
+</html>
