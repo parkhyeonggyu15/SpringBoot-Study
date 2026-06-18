@@ -19,4 +19,11 @@ public class ExchangeRate {
     private Double ttb;          // 전신환(송금) 받을 때 환율
     private Double tts;          // 전신환(송금) 보낼 때 환율
     private Double dealBasR;     // 매매기준율
+    private Double changeAmount; // 전 영업일 대비 변동액
+    private Double changeRate;   // 전 영업일 대비 변동률(%)
+
+    public void updateChange(Double changeAmount, Double changeRate) {
+        this.changeAmount = changeAmount;
+        this.changeRate = changeRate;
+    }
 }

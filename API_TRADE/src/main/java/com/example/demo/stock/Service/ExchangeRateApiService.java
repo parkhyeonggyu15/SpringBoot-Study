@@ -69,8 +69,11 @@ public class ExchangeRateApiService {
             ExchangeRate previous = previousByCountry.get(current.getCountry());
             double changeAmount = current.getDealBasR() - previous.getDealBasR();
             double changeRate = (changeAmount / previous.getDealBasR()) * 100;
+
+            current.updateChange(changeAmount, changeRate);
+            exchangeRateRepository.save(current);
+
             changes.add(new ExchangeRateChange(current, previous, changeAmount, changeRate));
-            System.out.println(changeRate);
         }
 
         return changes;
@@ -79,7 +82,6 @@ public class ExchangeRateApiService {
     // searchDate 이전 영업일을 하루씩 거슬러 올라가며 환율 정보를 찾습니다 (주말/공휴일은 API가 빈 응답을 주므로 건너뜀).
     private List<ExchangeRate> findPreviousBusinessDayRates(LocalDate searchDate) {
         LocalDate candidate = searchDate.minusDays(1);
-        System.out.println(candidate);
         for (int attempt = 0; attempt < MAX_PREVIOUS_DAY_LOOKUP; attempt++) {
 
             try {
