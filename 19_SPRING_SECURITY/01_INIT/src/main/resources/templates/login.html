@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <h1>LOGIN PAGE</h1>
+        <form action="/login" method="post">
+            USERNAME : <input type="text" name="username"><br/>
+            PASSWORD : <input type="password" name="password"><br/>
+            <!--    CSRF 활성화시 hidden 추가      -->
+<!--            <input type="text" name="_csrf" th:value="${_csrf.token}" />-->
+            <input type="submit" value="login" />
+        </form>
+
+</body>
+</html>
