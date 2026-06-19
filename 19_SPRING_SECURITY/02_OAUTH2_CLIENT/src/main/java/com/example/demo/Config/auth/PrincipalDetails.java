@@ -24,7 +24,9 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     private UserDTO userDTO;
 
 
-
+    //---------------------------------------
+    //LOCAL
+    //---------------------------------------
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
@@ -36,9 +38,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         }
         return authorities;
     }
-    //---------------------------------------
-    //LOCAL
-    //---------------------------------------
+
 
     @Override
     public String getPassword() {
@@ -74,13 +74,15 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     //---------------------------------------
     //OAUTH2
     //---------------------------------------
+    Map<String,Object> attributes;
+
     @Override
     public Map<String, Object> getAttributes() {
-        return Map.of();
+        return attributes;
     }
 
     @Override
     public String getName() {
-        return "";
+        return userDTO.getUsername();
     }
 }

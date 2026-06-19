@@ -32,7 +32,7 @@ public class PrincipalDetailsService implements UserDetailsService {
                     .password(user.getPassword())
                     .role(user.getRole())
                     .build();
-            principalDetails = new PrincipalDetails(userDTO);
+            principalDetails = PrincipalDetails.builder().userDTO(userDTO).build();
 
         }
         else
