@@ -13,6 +13,12 @@
 <!--            <input type="text" name="_csrf" th:value="${_csrf.token}" />-->
             <input type="submit" value="login" />
         </form>
+        <hr>
+
+        <a href="/oauth2/authorization/kakao">카카오 로그인</a> <br/>
+
+
+        <hr>
 
         <span th:text="${param.error}"></span>
         <span th:text="${param.logout}"></span>
