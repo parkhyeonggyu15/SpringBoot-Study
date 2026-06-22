@@ -24,21 +24,20 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     private UserDTO userDTO;
 
 
-    //---------------------------------------
+    //---------------------------------
     //LOCAL
-    //---------------------------------------
+    //---------------------------------
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        Collection<GrantedAuthority> authorities = new ArrayList();
 
-        String[] roles = userDTO.getRole().split(","); //"ROLE_USER,ROLE_ADMIN" ->["",""]
+        String[] roles =userDTO.getRole().split(","); //"ROLE_USER,ROLE_ADMIN" ->["",""]
         for(String role : roles){
             authorities.add(new SimpleGrantedAuthority(role));
         }
         return authorities;
     }
-
 
     @Override
     public String getPassword() {
@@ -71,9 +70,9 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     }
 
 
-    //---------------------------------------
+    //---------------------------------
     //OAUTH2
-    //---------------------------------------
+    //---------------------------------
     Map<String,Object> attributes;
 
     @Override
@@ -85,4 +84,5 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     public String getName() {
         return userDTO.getUsername();
     }
+
 }

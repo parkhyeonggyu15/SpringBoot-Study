@@ -15,8 +15,9 @@ public class CustomLogoutHandler implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         log.info("CustomLogoutHandler's logout invoke...");
 
+
         //세션기반(Default)
-//        HttpSession session = request.getSession(false);
+//        HttpSession session =request.getSession(false);
 //        if(session!=null)
 //            session.invalidate();
 

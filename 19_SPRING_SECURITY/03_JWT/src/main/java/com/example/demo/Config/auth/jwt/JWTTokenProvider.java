@@ -17,8 +17,10 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -27,22 +29,22 @@ public class JWTTokenProvider {
 
     @Autowired
     private UserRepository userRepository;
-
 //    @Autowired
 //    private SignatureRepository signatureRepository;
 
     //Key
     private Key key ;
 
-        @PostConstruct
-        public Key getKey(){
-            if(this.key==null) {
-                byte[] keyBytes = KeyGenerator.keyGen();
-                this.key = Keys.hmacShaKeyFor(keyBytes);
-                return key;
-            }else
-                return this.key;
-        }
+    @PostConstruct
+    public Key getKey(){
+        if(this.key==null) {
+            byte[] keyBytes = KeyGenerator.keyGen();
+            this.key = Keys.hmacShaKeyFor(keyBytes);
+            return key;
+        }else
+            return this.key;
+    }
+
 //        @PostConstruct
 //        public void init(){
 //            List<Signature> list = signatureRepository.findAll();

@@ -12,5 +12,4 @@ public interface JwtTokenRepository extends JpaRepository<JwtToken,Long> {
     JwtToken findByAccessToken(String accessToken);
     //username -> token정보가져오기
     JwtToken findByUsername(String username);
-
 }

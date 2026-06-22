@@ -16,7 +16,8 @@ import java.net.URLEncoder;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-      log.info("CustomAuthenticationEntryPoint's commence invoke..."+authException.getMessage());
+        log.info("CustomAuthenticationEntryPoint's commence invoke.."+authException.getMessage());
         response.sendRedirect("/login?error="+ URLEncoder.encode(authException.getMessage(),"utf-8"));
+
     }
 }

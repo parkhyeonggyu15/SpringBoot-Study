@@ -11,7 +11,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,7 +24,6 @@ import java.time.LocalDateTime;
 @Component
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
-
     @Autowired
     JWTTokenProvider jwtTokenProvider;
 
@@ -35,20 +33,20 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        //TOKEN을 COOKIE로 전달
+        //TOKEN 을 COOKIE로 전달
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
         Cookie cookie = new Cookie(JWTProperties.ACCESS_TOKEN_COOKIE_NAME,tokenInfo.getAccessToken());
 
-        //[수정] Cookie.setMaxAge()는 '초' 단위이나 상수는 '밀리초'이므로 1000으로 나눠 전달 (5분)
-//        cookie.setMaxAge(JWTProperties.ACCESS_TOKEN_EXPIRATION_TIME/1000);  //accesstoken 유지시간
-        cookie.setMaxAge(JWTProperties.ACCESS_TOKEN_EXPIRATION_TIME);  //accesstoken 유지시간
+        // [수정] Cookie.setMaxAge()는 '초' 단위이나 상수는 '밀리초'이므로 1000으로 나눠 전달 (5분)
+//        cookie.setMaxAge(JWTProperties.ACCESS_TOKEN_EXPIRATION_TIME/1000);    //accesstoken 유지시간
+        cookie.setMaxAge(JWTProperties.ACCESS_TOKEN_EXPIRATION_TIME);    //accesstoken 유지시간
         cookie.setPath("/");    //쿠키 적용경로(/ : 모든경로)
-        //[수정] JS에서 토큰 접근 차단(XSS 탈취 방지). HTTPS 환경에서는 cookie.setSecure(true)도 함께 권장
+        // [수정] JS에서 토큰 접근 차단(XSS 탈취 방지). HTTPS 환경에서는 cookie.setSecure(true)도 함께 권장
         cookie.setHttpOnly(true);
         response.addCookie(cookie); //응답정보에 쿠키 포함
 
-        // Refresh-Token / 1) access token과 함께저장 2) refresh db 저장 3) refresh Redis 서버 저장
-        // 2) refresh db 저장
+        // Refresh-Token ? 1) access-token과 함께전달 2) refresh db저장 3) refresh Redis 서버 저장
+        // 2) refresh db저장
         PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
         String auth = principalDetails.getUserDTO().getRole();
         JwtToken tokenEntity = JwtToken.builder()
@@ -60,8 +58,10 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
                 .build();
         jwtTokenRepository.save(tokenEntity);
 
-        log.info("CustomSuccessHandler's onAuthenticationSuccess invoke...");
-//        response.sendRedirect("/");
+
+
+        log.info("CustomSuccessHandler's onAuthenticationSuccess invoke..");
+//      response.sendRedirect("/");
         String redirectUrl = "/";
         for(GrantedAuthority authority : authentication.getAuthorities())
         {
@@ -82,5 +82,6 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
             }
         }
         response.sendRedirect(redirectUrl);
+
     }
 }
