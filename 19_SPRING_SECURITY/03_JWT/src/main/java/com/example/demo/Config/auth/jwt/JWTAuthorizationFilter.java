@@ -1,6 +1,10 @@
 package com.example.demo.Config.auth.jwt;
 
+import com.example.demo.Domain.Common.Entity.JwtToken;
+import com.example.demo.Domain.Common.Repository.JwtTokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,12 +19,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Date;
 
 @Component
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     @Autowired
     JWTTokenProvider jwtTokenProvider;
+
+    @Autowired
+    JwtTokenRepository jwtTokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -52,10 +60,61 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
                 }
                 else{
-                    //- yes -> refresh-token -> refresh-token is Expired ?
+
                 }
             }catch (ExpiredJwtException e1){
                 System.out.println("ExpiredJwtException ...RefreshToken Expired.."+e1.getMessage());
+                //- yes -> refresh-token -> refresh-token is Expired ?
+                JwtToken entity = jwtTokenRepository.findByAccessToken(token);
+
+                try{
+                    if(entity != null){
+                        if(jwtTokenProvider.validateToken(entity.getRefreshToken())){
+                            //access token 재발급
+                            long now = (new Date()).getTime();  //현재시간
+                            String accessToken = Jwts.builder()
+                                    .setSubject(entity.getUsername()) //본문 TITLE
+                                    .setExpiration(new Date(now + JWTProperties.ACCESS_TOKEN_EXPIRATION_TIME )) //만료날짜(밀리초단위)
+                                    .signWith(jwtTokenProvider.getKey(), SignatureAlgorithm.HS256) // 서명값
+                                    .claim("username",entity.getUsername()) // 본문 내용
+                                    .claim("auth",entity.getAuth()) // 본문 내용
+                                    .compact();
+                            Cookie cookie = new Cookie(JWTProperties.ACCESS_TOKEN_COOKIE_NAME,accessToken);
+
+                            //[수정] Cookie.setMaxAge()는 '초' 단위이나 상수는 '밀리초'이므로 1000으로 나눠 전달 (5분)
+                            //        cookie.setMaxAge(JWTProperties.ACCESS_TOKEN_EXPIRATION_TIME/1000);  //accesstoken 유지시간
+                            cookie.setMaxAge(JWTProperties.ACCESS_TOKEN_EXPIRATION_TIME);  //accesstoken 유지시간
+                            cookie.setPath("/");    //쿠키 적용경로(/ : 모든경로)
+                            //[수정] JS에서 토큰 접근 차단(XSS 탈취 방지). HTTPS 환경에서는 cookie.setSecure(true)도 함께 권장
+                            cookie.setHttpOnly(true);
+                            response.addCookie(cookie); //응답정보에 쿠키 포함
+
+                            //db 에 갱신된 access-token 저장
+                            entity.setAccessToken(accessToken);
+                            jwtTokenRepository.save(entity);
+
+                            // 갱신된 accesstoken 으로 authentication
+                            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+                            if(authentication!=null)
+                                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                        }
+                    } else{
+
+                    }
+                }catch (ExpiredJwtException e2){
+                    System.out.println("ExpiredJwtException ...RefreshToken Expired ..."+e1.getMessage());
+                    //access 만료, refresh 만료
+                    // - > 쿠키만료
+                    Cookie cookie = new Cookie(JWTProperties.ACCESS_TOKEN_COOKIE_NAME,null);
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                    // - > db 삭제
+                    jwtTokenRepository.deleteById(entity.getId());
+
+                }catch (Exception e3){
+
+                }
             }catch (Exception e2){
                 System.out.println("Exception ...RefreshToken Expired.."+e2.getMessage());
             }

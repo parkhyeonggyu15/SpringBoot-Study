@@ -36,10 +36,12 @@ public class JWTTokenProvider {
 
         @PostConstruct
         public Key getKey(){
-            byte[] keyBytes = KeyGenerator.keyGen();
-            this.key = Keys.hmacShaKeyFor(keyBytes);
-            return key;
-
+            if(this.key==null) {
+                byte[] keyBytes = KeyGenerator.keyGen();
+                this.key = Keys.hmacShaKeyFor(keyBytes);
+                return key;
+            }else
+                return this.key;
         }
 //        @PostConstruct
 //        public void init(){

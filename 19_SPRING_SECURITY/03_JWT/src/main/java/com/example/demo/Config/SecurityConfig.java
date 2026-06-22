@@ -40,6 +40,9 @@ public class SecurityConfig {
 
         //권한처리
         http.authorizeHttpRequests((auth)->{
+            //정적경로 매핑
+            auth.requestMatchers("/favicon.ico").permitAll();
+
             auth.requestMatchers("/","/join","/login").permitAll();
             //
             auth.requestMatchers("/user").hasAnyRole("USER","ADMIN");

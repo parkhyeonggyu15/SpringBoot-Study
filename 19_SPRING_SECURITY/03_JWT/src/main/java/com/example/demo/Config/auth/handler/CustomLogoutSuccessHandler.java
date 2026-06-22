@@ -1,11 +1,14 @@
 package com.example.demo.Config.auth.handler;
 
 import com.example.demo.Config.auth.jwt.JWTProperties;
+import com.example.demo.Domain.Common.Repository.JwtTokenRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -17,9 +20,12 @@ import java.util.Arrays;
 @Slf4j
 @Component
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
+    @Autowired
+    JwtTokenRepository jwtTokenRepository;
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class,transactionManager = "jpaTransactionMananger")
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         log.info("CustomLogoutSuccessHandler's onLogoutSuccess invoke...");
 
@@ -36,6 +42,9 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         }
 
         if(token!=null) {
+            //db 삭제
+            jwtTokenRepository.deleteByAccessToken(token);
+
             //access-token 쿠키 제거
             Cookie cookie = new Cookie(JWTProperties.ACCESS_TOKEN_COOKIE_NAME, null);
             cookie.setMaxAge(0);
