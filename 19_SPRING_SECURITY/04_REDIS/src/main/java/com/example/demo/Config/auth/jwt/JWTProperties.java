@@ -2,8 +2,8 @@ package com.example.demo.Config.auth.jwt;
 
 public class JWTProperties {
 
-    public static final int ACCESS_TOKEN_EXPIRATION_TIME=1000*60*5;  // AccessToken 만료시간: 5분 (밀리초 단위)
-    public static final int REFRESH_TOKEN_EXPIRATION_TIME=1000*60*10; // RefreshToken 만료시간: 10분 (밀리초 단위)
+    public static final int ACCESS_TOKEN_EXPIRATION_TIME=1000*60*1;  // AccessToken 만료시간: 5분 (밀리초 단위)
+    public static final int REFRESH_TOKEN_EXPIRATION_TIME=1000*60*2; // RefreshToken 만료시간: 10분 (밀리초 단위)
     public static final String ACCESS_TOKEN_COOKIE_NAME="access-token";
     public static final String REFRESH_TOKEN_COOKIE_NAME="refresh-token";
     

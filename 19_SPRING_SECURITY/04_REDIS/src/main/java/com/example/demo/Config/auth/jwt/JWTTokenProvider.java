@@ -31,6 +31,7 @@ public class JWTTokenProvider {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private SignatureRepository signatureRepository;
 
@@ -39,11 +40,11 @@ public class JWTTokenProvider {
 
 
     public Key getKey(){
-        return this.key;
+            return this.key;
     }
 
-        @PostConstruct
-        public void init(){
+    @PostConstruct
+    public void init(){
             List<Signature> list = signatureRepository.findAll();
             if(list.isEmpty()){
                 byte[] keyBytes = KeyGenerator.keyGen();
@@ -60,6 +61,7 @@ public class JWTTokenProvider {
             }
 
         }
+
 
     public TokenInfo generateToken(Authentication authentication){
 
